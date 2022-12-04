@@ -27,5 +27,9 @@ ruleTester.run(ruleName, rule, {
       ...test('string-description-no-comment', true),
       errors: [{ messageId: 'comment' }],
     },
+    {
+      ...test('string-description-wrong-comment', true),
+      errors: [{ messageId: 'comment' }],
+    },
   ],
 });
