@@ -67,23 +67,22 @@ const testDescription = (
 
   const comment = getComment(parent, context);
 
-  const descriptionComment = createComment(descriptionValue);
-
   if (!comment) {
     return context.report({
       messageId: 'comment',
       node: parent,
-      fix: (fixer) => fixer.insertTextBefore(parent, descriptionComment),
+      fix: (fixer) =>
+        fixer.insertTextBefore(parent, createComment(descriptionValue)),
     });
   }
 
-  if (comment.value !== descriptionComment) {
+  if (comment.value !== `*\n * ${descriptionValue}\n `) {
     return context.report({
       messageId: 'comment',
       node: comment,
       fix: (fixer) => [
         fixer.removeRange([comment.range[0] - 1, comment.range[1]]),
-        fixer.insertTextBefore(parent, descriptionComment),
+        fixer.insertTextBefore(parent, createComment(descriptionValue)),
       ],
     });
   }

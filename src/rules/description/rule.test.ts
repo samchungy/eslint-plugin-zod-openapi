@@ -17,7 +17,7 @@ const ruleTester = new ESLintUtils.RuleTester({
 });
 
 ruleTester.run(ruleName, rule, {
-  valid: [],
+  valid: [test('string-description')],
   invalid: [
     {
       ...test('string-no-description'),
