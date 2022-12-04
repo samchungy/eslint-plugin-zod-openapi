@@ -103,7 +103,7 @@ export const rule = createRule({
       },
     };
   },
-  name: 'open-api-description',
+  name: 'open-api-example',
   meta: {
     fixable: 'code',
     type: 'problem',
