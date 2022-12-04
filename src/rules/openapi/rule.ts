@@ -1,7 +1,7 @@
 import { ESLintUtils } from '@typescript-eslint/utils';
 
-import { findOpenApiCallExpression } from './util/traverse';
-import { getType } from './util/type';
+import { findOpenApiCallExpression } from '../util/traverse';
+import { getType } from '../util/type';
 
 // eslint-disable-next-line new-cap
 const createRule = ESLintUtils.RuleCreator(
