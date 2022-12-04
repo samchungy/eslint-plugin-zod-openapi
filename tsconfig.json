@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "lib": ["ES2022"],
+    "outDir": "lib",
+    "target": "ES2022",
+    "removeComments": false
+  },
+  "exclude": ["lib*/**/*"],
+  "extends": "skuba/config/tsconfig.json"
+}
