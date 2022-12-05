@@ -4,4 +4,4 @@ const configuration = {
   rules,
 };
 
-export default configuration;
+export = configuration;

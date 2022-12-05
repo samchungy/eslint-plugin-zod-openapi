@@ -1,6 +1,6 @@
 {
   "name": "eslint-plugin-zod-to-openapi",
-  "version": "0.0.3-semantically-released",
+  "version": "0.0.4-semantically-released",
   "private": false,
   "description": "Eslint rules for zod-to-openapi",
   "homepage": "https://github.com/samchungy/eslint-plugin-zod-to-openapi#readme",
@@ -14,7 +14,6 @@
   "license": "MIT",
   "sideEffects": false,
   "main": "./lib-commonjs/index.js",
-  "module": "./lib-es2015/index.js",
   "types": "./lib-types/index.d.ts",
   "files": [
     "lib*/**/*.d.ts",
@@ -23,7 +22,7 @@
     "lib*/**/*.json"
   ],
   "scripts": {
-    "build": "skuba build-package",
+    "build": "skuba build --module CommonJS --outDir lib-commonjs --project tsconfig.build.json && skuba build --allowJS false --declaration --emitDeclarationOnly --outDir lib-types --project tsconfig.build.json",
     "format": "skuba format",
     "lint": "skuba lint",
     "release": "yarn build && skuba release",
