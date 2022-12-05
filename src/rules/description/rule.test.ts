@@ -46,5 +46,12 @@ ruleTester.run(ruleName, rule, {
       ),
       errors: [{ messageId: 'comment' }],
     },
+    {
+      ...test(
+        'object-property-description-no-comment-same-line-prop-disable-prettier',
+        true,
+      ),
+      errors: [{ messageId: 'comment' }],
+    },
   ],
 });
