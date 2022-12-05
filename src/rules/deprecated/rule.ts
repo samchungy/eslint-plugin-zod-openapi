@@ -4,19 +4,26 @@ import { createComment, getComment } from '../util/comments';
 import { findOpenApiCallExpression } from '../util/traverse';
 import { getType } from '../util/type';
 
-interface Description {
+interface Deprecated {
   property: TSESTree.Property;
   value: TSESTree.Literal['value'];
 }
 
-const getDescription = (
+// With the following example it extracts 'some description'
+// *
+// * some description
+const wordRegex = /[\*\\n ]+ (.*)/;
+
+const deprecationTag = '@deprecated';
+
+const getDeprecated = (
   properties: TSESTree.ObjectLiteralElement[],
-): Description | undefined => {
+): Deprecated | undefined => {
   for (const property of properties) {
     if (
       property.type === 'Property' &&
       property.key.type === 'Identifier' &&
-      property.key.name === 'description' &&
+      property.key.name === 'deprecated' &&
       property.value.type === 'Literal'
     ) {
       return {
@@ -28,7 +35,12 @@ const getDescription = (
   return undefined;
 };
 
-const testDescription = (
+const getExistingComment = (commentValue: string): string => {
+  const regex = wordRegex.exec(commentValue);
+  return regex?.[1] ?? '';
+};
+
+const testDeprecated = (
   node: TSESTree.VariableDeclaration | TSESTree.Property,
   context: Readonly<TSESLint.RuleContext<any, any>>,
   openApiCallExpression: TSESTree.CallExpression,
@@ -38,26 +50,16 @@ const testDescription = (
     return;
   }
 
-  const description = getDescription(argument.properties);
+  const deprecated = getDeprecated(argument.properties);
 
-  if (!description) {
-    return context.report({
-      messageId: 'required',
-      node: openApiCallExpression,
-    });
-  }
-
-  const descriptionValue = description.value;
-
-  if (typeof descriptionValue !== 'string') {
+  if (!deprecated) {
     return;
   }
 
-  if (!descriptionValue.length) {
-    return context.report({
-      messageId: 'required',
-      node: description.property,
-    });
+  const deprecatedValue = deprecated.value;
+
+  if (typeof deprecatedValue !== 'boolean' || !deprecatedValue) {
+    return;
   }
 
   const commentNode = node.type === 'VariableDeclaration' ? node.parent : node;
@@ -74,12 +76,14 @@ const testDescription = (
       fix: (fixer) =>
         fixer.insertTextBefore(
           commentNode,
-          createComment(descriptionValue, commentNode.loc),
+          createComment(deprecationTag, commentNode.loc),
         ),
     });
   }
 
-  if (!comment.value.includes(descriptionValue)) {
+  const existingComment = getExistingComment(comment.value);
+
+  if (!existingComment.includes(deprecationTag)) {
     return context.report({
       messageId: 'comment',
       node: comment,
@@ -90,7 +94,10 @@ const testDescription = (
         ]),
         fixer.insertTextBefore(
           commentNode,
-          createComment(descriptionValue, commentNode.loc),
+          createComment(
+            `${deprecationTag} ${existingComment}`,
+            commentNode.loc,
+          ),
         ),
       ],
     });
@@ -127,7 +134,7 @@ export const rule = createRule({
           return;
         }
 
-        return testDescription(node, context, openApiCallExpression);
+        return testDeprecated(node, context, openApiCallExpression);
       },
       Property(node) {
         const type = getType(node, context);
@@ -141,22 +148,21 @@ export const rule = createRule({
           return;
         }
 
-        return testDescription(node, context, openApiCallExpression);
+        return testDeprecated(node, context, openApiCallExpression);
       },
     };
   },
-  name: 'open-api-description',
+  name: 'open-api-deprecated',
   meta: {
     fixable: 'code',
     type: 'problem',
     messages: {
-      required: '.openapi() description is required on Zod Schema',
-      comment: '.openapi() description must match comment',
+      comment: '.openapi() deprecated should have a matching comment',
     },
     schema: [],
     docs: {
       description:
-        'Requires that all zod schema have a description and matching comment',
+        'Requires that all zod schemas which are marked as deprecated have a matching comment',
       recommended: 'error',
     },
   },
