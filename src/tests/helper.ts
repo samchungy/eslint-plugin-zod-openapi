@@ -9,7 +9,7 @@ interface Test {
 
 export const setupHelpers = (rule: string) => {
   const test = (filePath: string, fix?: boolean): Test => ({
-    name: filePath,
+    name: `${filePath}${fix ? ' fix' : ''}`,
     // eslint-disable-next-line no-sync
     code: fs
       .readFileSync(

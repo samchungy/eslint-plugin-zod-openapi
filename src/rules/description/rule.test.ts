@@ -17,7 +17,7 @@ const ruleTester = new ESLintUtils.RuleTester({
 });
 
 ruleTester.run(ruleName, rule, {
-  valid: [test('string-description')],
+  valid: [test('string-description'), test('object-property-description')],
   invalid: [
     {
       ...test('string-no-description'),
@@ -29,6 +29,10 @@ ruleTester.run(ruleName, rule, {
     },
     {
       ...test('string-description-wrong-comment', true),
+      errors: [{ messageId: 'comment' }],
+    },
+    {
+      ...test('object-property-description-no-comment', true),
       errors: [{ messageId: 'comment' }],
     },
   ],

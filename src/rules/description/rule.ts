@@ -1,6 +1,5 @@
 import { ESLintUtils, TSESLint, TSESTree } from '@typescript-eslint/utils';
 
-import { createComment, getComment } from '../util/comments';
 import { findOpenApiCallExpression } from '../util/traverse';
 import { getType } from '../util/type';
 
@@ -8,6 +7,23 @@ interface Description {
   property: TSESTree.Property;
   value: TSESTree.Literal['value'];
 }
+
+export const getComment = (
+  node: TSESTree.Node,
+  context: Readonly<TSESLint.RuleContext<any, any>>,
+): TSESTree.Comment | undefined =>
+  context.getSourceCode().getCommentsBefore(node)[0];
+
+export const createComment = (
+  contents: string,
+  loc: TSESTree.SourceLocation,
+) => {
+  const indent = ' '.repeat(loc.start.column);
+  return `/**
+${indent} * ${contents}
+${indent} */
+${indent}`;
+};
 
 const getDescription = (
   properties: TSESTree.ObjectLiteralElement[],
@@ -29,7 +45,7 @@ const getDescription = (
 };
 
 const testDescription = (
-  node: TSESTree.Node,
+  node: TSESTree.VariableDeclaration | TSESTree.Property,
   context: Readonly<TSESLint.RuleContext<any, any>>,
   openApiCallExpression: TSESTree.CallExpression,
 ) => {
@@ -60,29 +76,36 @@ const testDescription = (
     });
   }
 
-  const parent = node.parent;
-  if (!parent) {
+  const commentNode = node.type === 'VariableDeclaration' ? node.parent : node;
+  if (!commentNode) {
     return;
   }
 
-  const comment = getComment(parent, context);
+  const comment = getComment(commentNode, context);
 
   if (!comment) {
     return context.report({
       messageId: 'comment',
-      node: parent,
+      node: commentNode,
       fix: (fixer) =>
-        fixer.insertTextBefore(parent, createComment(descriptionValue)),
+        fixer.insertTextBefore(
+          commentNode,
+          createComment(descriptionValue, commentNode.loc),
+        ),
     });
   }
+  const strippedComment = comment.value.replaceAll('*', '').trim();
 
-  if (comment.value !== `*\n * ${descriptionValue}\n `) {
+  if (strippedComment !== descriptionValue) {
     return context.report({
       messageId: 'comment',
       node: comment,
       fix: (fixer) => [
         fixer.removeRange([comment.range[0] - 1, comment.range[1]]),
-        fixer.insertTextBefore(parent, createComment(descriptionValue)),
+        fixer.insertTextBefore(
+          commentNode,
+          createComment(descriptionValue, commentNode.loc),
+        ),
       ],
     });
   }
@@ -126,9 +149,13 @@ export const rule = createRule({
           return;
         }
 
+        if (node.value.type === 'Literal' || node.value.type === 'Identifier') {
+          return;
+        }
+
         const openApiCallExpression = findOpenApiCallExpression(node);
 
-        if (!openApiCallExpression || node.value.type !== 'Identifier') {
+        if (!openApiCallExpression) {
           return;
         }
 
@@ -142,7 +169,7 @@ export const rule = createRule({
     type: 'problem',
     messages: {
       required: '.openapi() description is required on Zod Schema',
-      comment: '.openapi() description must match variable comment',
+      comment: '.openapi() description must match comment',
     },
     schema: [],
     docs: {
