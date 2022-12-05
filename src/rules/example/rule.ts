@@ -95,7 +95,7 @@ export const rule = createRule({
 
         const openApiCallExpression = findOpenApiCallExpression(node);
 
-        if (!openApiCallExpression || node.value.type !== 'Identifier') {
+        if (!openApiCallExpression) {
           return;
         }
 

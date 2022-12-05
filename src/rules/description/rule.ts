@@ -149,10 +149,6 @@ export const rule = createRule({
           return;
         }
 
-        if (node.value.type === 'Literal' || node.value.type === 'Identifier') {
-          return;
-        }
-
         const openApiCallExpression = findOpenApiCallExpression(node);
 
         if (!openApiCallExpression) {

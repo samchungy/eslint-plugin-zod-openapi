@@ -44,7 +44,11 @@ export const rule = createRule({
 
         const openApiCallExpression = findOpenApiCallExpression(node);
 
-        if (!openApiCallExpression && node.value.type !== 'Identifier') {
+        if (node.value.type !== 'Identifier') {
+          return;
+        }
+
+        if (!openApiCallExpression) {
           return context.report({
             messageId: 'open-api-required',
             node,
