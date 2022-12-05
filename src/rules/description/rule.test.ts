@@ -53,5 +53,9 @@ ruleTester.run(ruleName, rule, {
       ),
       errors: [{ messageId: 'comment' }],
     },
+    {
+      ...test('object-property-wrong-description', true),
+      errors: [{ messageId: 'comment' }],
+    },
   ],
 });

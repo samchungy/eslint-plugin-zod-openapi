@@ -187,7 +187,7 @@ export const rule = createRule({
             node: comment,
             fix: (fixer) => [
               fixer.removeRange([
-                comment.range[0] - commentNode.loc.start.column, // indent
+                comment.range[0] - (commentNode.loc.start.column + 1), // newline
                 comment.range[1],
               ]),
               fixer.insertTextBefore(
