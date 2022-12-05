@@ -289,8 +289,7 @@ export const rule = createRule({
     type: 'problem',
     messages: {
       required: '.openapi() description is required on Zod Schema',
-      comment: '.openapi() description must match comment',
-      deprecated: '.openapi() description must contain deprecated tag',
+      comment: '.openapi() description and deprecated must match comment',
     },
     schema: [],
     docs: {

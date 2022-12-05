@@ -17,7 +17,12 @@ const ruleTester = new ESLintUtils.RuleTester({
 });
 
 ruleTester.run(ruleName, rule, {
-  valid: [test('string-description'), test('object-property-description')],
+  valid: [
+    test('string-description'),
+    test('object-property-description'),
+    test('string-deprecated'),
+    test('object-property-deprecated'),
+  ],
   invalid: [
     {
       ...test('string-no-description'),
@@ -55,6 +60,18 @@ ruleTester.run(ruleName, rule, {
     },
     {
       ...test('object-property-wrong-description', true),
+      errors: [{ messageId: 'comment' }],
+    },
+    {
+      ...test('string-deprecated-no-comment', true),
+      errors: [{ messageId: 'comment' }],
+    },
+    {
+      ...test('string-deprecated-wrong-comment', true),
+      errors: [{ messageId: 'comment' }],
+    },
+    {
+      ...test('object-property-description-no-deprecated', true),
       errors: [{ messageId: 'comment' }],
     },
   ],
