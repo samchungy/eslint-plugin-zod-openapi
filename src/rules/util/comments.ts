@@ -6,14 +6,22 @@ export const getComment = (
 ): TSESTree.Comment | undefined =>
   context.getSourceCode().getCommentsBefore(node)[0];
 
-export const createComment = (
-  contents: string,
-  loc: TSESTree.SourceLocation,
-  newline?: boolean,
-) => {
+interface CommentParams {
+  contents: string;
+  loc: TSESTree.SourceLocation;
+  deprecated: boolean;
+  newline?: boolean;
+}
+
+export const createComment = ({
+  contents,
+  loc,
+  deprecated,
+  newline,
+}: CommentParams) => {
   const indent = ' '.repeat(loc.start.column);
   return `${newline ? `\n${indent}` : ''}/**
-${indent} * ${contents}
+${indent} * ${deprecated ? '@deprecated ' : ''}${contents}
 ${indent} */
 ${indent}`;
 };

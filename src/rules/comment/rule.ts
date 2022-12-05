@@ -1,22 +1,79 @@
-import { ESLintUtils, TSESTree } from '@typescript-eslint/utils';
+import { ESLintUtils, TSESLint, TSESTree } from '@typescript-eslint/utils';
 
-import { createComment, getComment, isNewLineRequired } from '../util/comments';
 import { findOpenApiCallExpression, getCommentNode } from '../util/traverse';
 import { getType } from '../util/type';
 
-interface Description {
+const deprecatedTag = '@deprecated';
+
+export const getComment = (
+  node: TSESTree.Node,
+  context: Readonly<TSESLint.RuleContext<any, any>>,
+): TSESTree.Comment | undefined =>
+  context.getSourceCode().getCommentsBefore(node)[0];
+
+interface CommentParams {
+  contents: string;
+  loc: TSESTree.SourceLocation;
+  deprecated: boolean;
+  newline?: boolean;
+}
+
+export const createComment = ({
+  contents,
+  loc,
+  deprecated,
+  newline,
+}: CommentParams) => {
+  const indent = ' '.repeat(loc.start.column);
+  return `${newline ? `\n${indent}` : ''}/**
+${indent} * ${deprecated ? `${deprecatedTag} ` : ''}${contents}
+${indent} */
+${indent}`;
+};
+
+export const isNewLineRequired = (node: TSESTree.Property) => {
+  const objectExpression = node.parent;
+  if (objectExpression?.type !== 'ObjectExpression') {
+    return false;
+  }
+
+  // If our object property is on the same line as the starting object curly
+  // we need a new line
+  // eg. { description: 'a description' }
+  if (node.loc.start.line === objectExpression.loc.start.line) {
+    return true;
+  }
+
+  // if our object property is on the same line as another object key
+  if (
+    objectExpression.properties.some(
+      (property) =>
+        property.type === 'Property' &&
+        node.range[0] !== property.range[0] &&
+        node.range[1] !== property.range[1] &&
+        node.loc.start.line === property.loc.start.line,
+    )
+  ) {
+    return true;
+  }
+
+  return false;
+};
+
+interface PropertyNode {
   property: TSESTree.Property;
   value: TSESTree.Literal['value'];
 }
 
-const getDescription = (
+const getPropertyNode = (
   properties: TSESTree.ObjectLiteralElement[],
-): Description | undefined => {
+  key: string,
+): PropertyNode | undefined => {
   for (const property of properties) {
     if (
       property.type === 'Property' &&
       property.key.type === 'Identifier' &&
-      property.key.name === 'description' &&
+      property.key.name === key &&
       property.value.type === 'Literal'
     ) {
       return {
@@ -63,7 +120,7 @@ export const rule = createRule({
           return;
         }
 
-        const description = getDescription(argument.properties);
+        const description = getPropertyNode(argument.properties, 'description');
 
         if (!description) {
           return context.report({
@@ -86,10 +143,11 @@ export const rule = createRule({
           });
         }
 
+        const deprecated = getPropertyNode(argument.properties, 'deprecated');
+
+        const deprecatedValue = Boolean(deprecated?.value);
+
         const commentNode = getCommentNode(node);
-        if (!commentNode) {
-          return;
-        }
 
         const comment = getComment(commentNode, context);
 
@@ -100,12 +158,20 @@ export const rule = createRule({
             fix: (fixer) =>
               fixer.insertTextBefore(
                 commentNode,
-                createComment(descriptionValue, commentNode.loc),
+                createComment({
+                  contents: descriptionValue,
+                  loc: commentNode.loc,
+                  deprecated: deprecatedValue,
+                }),
               ),
           });
         }
 
-        if (!comment.value.includes(descriptionValue)) {
+        if (
+          !comment.value.includes(descriptionValue) || deprecatedValue
+            ? !comment.value.includes(deprecatedTag)
+            : false
+        ) {
           return context.report({
             messageId: 'comment',
             node: comment,
@@ -116,7 +182,11 @@ export const rule = createRule({
               ]),
               fixer.insertTextBefore(
                 commentNode,
-                createComment(descriptionValue, commentNode.loc),
+                createComment({
+                  contents: descriptionValue,
+                  loc: commentNode.loc,
+                  deprecated: deprecatedValue,
+                }),
               ),
             ],
           });
@@ -139,7 +209,7 @@ export const rule = createRule({
           return;
         }
 
-        const description = getDescription(argument.properties);
+        const description = getPropertyNode(argument.properties, 'description');
 
         if (!description) {
           return context.report({
@@ -165,6 +235,10 @@ export const rule = createRule({
 
         const comment = getComment(commentNode, context);
 
+        const deprecated = getPropertyNode(argument.properties, 'deprecated');
+
+        const deprecatedValue = Boolean(deprecated?.value);
+
         if (!comment) {
           return context.report({
             messageId: 'comment',
@@ -172,16 +246,21 @@ export const rule = createRule({
             fix: (fixer) =>
               fixer.insertTextBefore(
                 commentNode,
-                createComment(
-                  descriptionValue,
-                  commentNode.loc,
-                  isNewLineRequired(node),
-                ),
+                createComment({
+                  contents: descriptionValue,
+                  loc: commentNode.loc,
+                  deprecated: deprecatedValue,
+                  newline: isNewLineRequired(node),
+                }),
               ),
           });
         }
 
-        if (!comment.value.includes(descriptionValue)) {
+        if (
+          !comment.value.includes(descriptionValue) || deprecatedValue
+            ? !comment.value.includes(deprecatedTag)
+            : false
+        ) {
           return context.report({
             messageId: 'comment',
             node: comment,
@@ -192,7 +271,11 @@ export const rule = createRule({
               ]),
               fixer.insertTextBefore(
                 commentNode,
-                createComment(descriptionValue, commentNode.loc),
+                createComment({
+                  contents: descriptionValue,
+                  loc: commentNode.loc,
+                  deprecated: deprecatedValue,
+                }),
               ),
             ],
           });
@@ -200,13 +283,14 @@ export const rule = createRule({
       },
     };
   },
-  name: 'open-api-description',
+  name: 'open-api-comment',
   meta: {
     fixable: 'code',
     type: 'problem',
     messages: {
       required: '.openapi() description is required on Zod Schema',
       comment: '.openapi() description must match comment',
+      deprecated: '.openapi() description must contain deprecated tag',
     },
     schema: [],
     docs: {
