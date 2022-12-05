@@ -44,7 +44,7 @@ export const rule = createRule({
 
         const openApiCallExpression = findOpenApiCallExpression(node);
 
-        if (node.value.type !== 'Identifier') {
+        if (node.value.type === 'Identifier') {
           return;
         }
 

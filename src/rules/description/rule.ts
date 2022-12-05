@@ -78,9 +78,8 @@ const testDescription = (
         ),
     });
   }
-  const strippedComment = comment.value.replaceAll('*', '').trim();
 
-  if (strippedComment !== descriptionValue) {
+  if (!comment.value.includes(descriptionValue)) {
     return context.report({
       messageId: 'comment',
       node: comment,
