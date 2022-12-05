@@ -15,4 +15,4 @@ node_modules*/
 
 .eslintignore
 
-**/*/tests/*-disable-lint*.ts
+src/rules/**/tests/*-disable-lint*.ts

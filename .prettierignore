@@ -18,3 +18,5 @@ node_modules*/
 gantry*.yaml
 gantry*.yml
 # end managed by skuba
+
+src/rules/**/tests/*-disable-prettier*.ts
