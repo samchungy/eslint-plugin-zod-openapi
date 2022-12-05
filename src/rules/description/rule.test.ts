@@ -39,5 +39,12 @@ ruleTester.run(ruleName, rule, {
       ...test('object-property-description-no-comment', true),
       errors: [{ messageId: 'comment' }],
     },
+    {
+      ...test(
+        'object-property-description-no-comment-same-line-disable-prettier',
+        true,
+      ),
+      errors: [{ messageId: 'comment' }],
+    },
   ],
 });
