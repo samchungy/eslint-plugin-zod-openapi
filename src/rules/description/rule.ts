@@ -1,7 +1,7 @@
-import { ESLintUtils, TSESLint, TSESTree } from '@typescript-eslint/utils';
+import { ESLintUtils, TSESTree } from '@typescript-eslint/utils';
 
-import { createComment, getComment } from '../util/comments';
-import { findOpenApiCallExpression } from '../util/traverse';
+import { createComment, getComment, isNewLineRequired } from '../util/comments';
+import { findOpenApiCallExpression, getCommentNode } from '../util/traverse';
 import { getType } from '../util/type';
 
 interface Description {
@@ -26,75 +26,6 @@ const getDescription = (
     }
   }
   return undefined;
-};
-
-const testDescription = (
-  node: TSESTree.VariableDeclaration | TSESTree.Property,
-  context: Readonly<TSESLint.RuleContext<any, any>>,
-  openApiCallExpression: TSESTree.CallExpression,
-) => {
-  const argument = openApiCallExpression?.arguments[0];
-  if (!argument || argument.type !== 'ObjectExpression') {
-    return;
-  }
-
-  const description = getDescription(argument.properties);
-
-  if (!description) {
-    return context.report({
-      messageId: 'required',
-      node: openApiCallExpression,
-    });
-  }
-
-  const descriptionValue = description.value;
-
-  if (typeof descriptionValue !== 'string') {
-    return;
-  }
-
-  if (!descriptionValue.length) {
-    return context.report({
-      messageId: 'required',
-      node: description.property,
-    });
-  }
-
-  const commentNode = node.type === 'VariableDeclaration' ? node.parent : node;
-  if (!commentNode) {
-    return;
-  }
-
-  const comment = getComment(commentNode, context);
-
-  if (!comment) {
-    return context.report({
-      messageId: 'comment',
-      node: commentNode,
-      fix: (fixer) =>
-        fixer.insertTextBefore(
-          commentNode,
-          createComment(descriptionValue, commentNode.loc),
-        ),
-    });
-  }
-
-  if (!comment.value.includes(descriptionValue)) {
-    return context.report({
-      messageId: 'comment',
-      node: comment,
-      fix: (fixer) => [
-        fixer.removeRange([
-          comment.range[0] - (commentNode.loc.start.column + 1),
-          comment.range[1],
-        ]),
-        fixer.insertTextBefore(
-          commentNode,
-          createComment(descriptionValue, commentNode.loc),
-        ),
-      ],
-    });
-  }
 };
 
 // eslint-disable-next-line new-cap
@@ -127,7 +58,69 @@ export const rule = createRule({
           return;
         }
 
-        return testDescription(node, context, openApiCallExpression);
+        const argument = openApiCallExpression?.arguments[0];
+        if (!argument || argument.type !== 'ObjectExpression') {
+          return;
+        }
+
+        const description = getDescription(argument.properties);
+
+        if (!description) {
+          return context.report({
+            messageId: 'required',
+            node: openApiCallExpression,
+          });
+        }
+
+        const descriptionValue = description.value;
+
+        if (typeof descriptionValue !== 'string') {
+          // would be handled by ts
+          return;
+        }
+
+        if (!descriptionValue.length) {
+          return context.report({
+            messageId: 'required',
+            node: description.property,
+          });
+        }
+
+        const commentNode = getCommentNode(node);
+        if (!commentNode) {
+          return;
+        }
+
+        const comment = getComment(commentNode, context);
+
+        if (!comment) {
+          return context.report({
+            messageId: 'comment',
+            node: commentNode,
+            fix: (fixer) =>
+              fixer.insertTextBefore(
+                commentNode,
+                createComment(descriptionValue, commentNode.loc),
+              ),
+          });
+        }
+
+        if (!comment.value.includes(descriptionValue)) {
+          return context.report({
+            messageId: 'comment',
+            node: comment,
+            fix: (fixer) => [
+              fixer.removeRange([
+                comment.range[0] - (comment.loc.start.column + 1), // indent
+                comment.range[1],
+              ]),
+              fixer.insertTextBefore(
+                commentNode,
+                createComment(descriptionValue, commentNode.loc),
+              ),
+            ],
+          });
+        }
       },
       Property(node) {
         const type = getType(node, context);
@@ -141,7 +134,69 @@ export const rule = createRule({
           return;
         }
 
-        return testDescription(node, context, openApiCallExpression);
+        const argument = openApiCallExpression?.arguments[0];
+        if (!argument || argument.type !== 'ObjectExpression') {
+          return;
+        }
+
+        const description = getDescription(argument.properties);
+
+        if (!description) {
+          return context.report({
+            messageId: 'required',
+            node: openApiCallExpression,
+          });
+        }
+
+        const descriptionValue = description.value;
+
+        if (typeof descriptionValue !== 'string') {
+          return;
+        }
+
+        if (!descriptionValue.length) {
+          return context.report({
+            messageId: 'required',
+            node: description.property,
+          });
+        }
+
+        const commentNode = node;
+
+        const comment = getComment(commentNode, context);
+
+        if (!comment) {
+          return context.report({
+            messageId: 'comment',
+            node: commentNode,
+            fix: (fixer) =>
+              fixer.insertTextBefore(
+                commentNode,
+                createComment(
+                  descriptionValue,
+                  commentNode.loc,
+                  isNewLineRequired(node),
+                ),
+              ),
+          });
+        }
+
+        if (!comment.value.includes(descriptionValue)) {
+          return context.report({
+            messageId: 'comment',
+            node: comment,
+            fix: (fixer) => [
+              fixer.removeRange([
+                comment.range[0] - commentNode.loc.start.column, // indent
+                comment.range[1],
+              ]),
+              fixer.insertTextBefore(
+                commentNode,
+                createComment(descriptionValue, commentNode.loc),
+              ),
+            ],
+          });
+        }
       },
     };
   },

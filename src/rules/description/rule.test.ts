@@ -28,7 +28,11 @@ ruleTester.run(ruleName, rule, {
       errors: [{ messageId: 'comment' }],
     },
     {
-      ...test('string-description-wrong-comment', true),
+      ...test('string-description-wrong-comment-indent', true),
+      errors: [{ messageId: 'comment' }],
+    },
+    {
+      ...test('string-description-no-comment-indent', true),
       errors: [{ messageId: 'comment' }],
     },
     {

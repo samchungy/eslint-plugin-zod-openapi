@@ -22,7 +22,7 @@ export const setupHelpers = (rule: string) => {
         .readFileSync(
           path.join(
             process.cwd(),
-            `src/rules/${rule}/tests/${filePath}-fix.ts`,
+            `src/rules/${rule}/tests/${filePath}.fix.ts`,
           ),
         )
         .toString(),
