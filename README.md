@@ -17,7 +17,7 @@ Next steps:
 6. [ ] Delete this checklist 😌.
 
 [#open-source]: https://slack.com/app_redirect?channel=C39P1H2SU
-[github repository settings]: https://github.com/Me/eslint-plugin-zod-to-openapi/settings
+[github repository settings]: https://github.com/samchungy/eslint-plugin-zod-to-openapi/settings
 [renovate]: https://github.com/apps/renovate
 [seek's open source rfc]: https://rfc.skinfra.xyz/RFC016-Open-Source.html
 
