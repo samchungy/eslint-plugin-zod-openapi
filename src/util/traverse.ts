@@ -71,15 +71,7 @@ export const findLastNode = (
 };
 
 export const getCommentNode = (node: TSESTree.Node): TSESTree.Node => {
-  if (node.type !== 'VariableDeclaration') {
-    return node;
-  }
-
-  if (!node.parent) {
-    return node;
-  }
-
-  if (node.parent.type === 'ExportNamedDeclaration') {
+  if (node.parent?.type === 'ExportNamedDeclaration') {
     return node.parent;
   }
 
