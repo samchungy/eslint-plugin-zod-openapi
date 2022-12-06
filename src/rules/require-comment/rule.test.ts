@@ -77,5 +77,13 @@ ruleTester.run(ruleName, rule, {
       ...test('string-description-remove-deprecated', true),
       errors: [{ messageId: 'comment' }],
     },
+    {
+      ...test('object-property-remove-deprecated', true),
+      errors: [{ messageId: 'comment' }],
+    },
+    {
+      ...test('string-deprecation-change-description', true),
+      errors: [{ messageId: 'comment' }],
+    },
   ],
 });
