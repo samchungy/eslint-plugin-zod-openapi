@@ -170,7 +170,7 @@ export const rule = createRule({
         if (
           !comment.value.includes(descriptionValue) || deprecatedValue
             ? !comment.value.includes(deprecatedTag)
-            : false
+            : comment.value.includes(deprecatedTag)
         ) {
           return context.report({
             messageId: 'comment',
@@ -259,7 +259,7 @@ export const rule = createRule({
         if (
           !comment.value.includes(descriptionValue) || deprecatedValue
             ? !comment.value.includes(deprecatedTag)
-            : false
+            : comment.value.includes(deprecatedTag)
         ) {
           return context.report({
             messageId: 'comment',
