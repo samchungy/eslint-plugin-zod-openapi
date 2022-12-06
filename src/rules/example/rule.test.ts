@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-floating-promises */
 import { ESLintUtils } from '@typescript-eslint/utils';
 
 import { setupHelpers } from '../../tests/helper';
