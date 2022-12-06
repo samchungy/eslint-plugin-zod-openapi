@@ -2,7 +2,7 @@ import { ESLintUtils } from '@typescript-eslint/utils';
 
 import { setupHelpers } from '../../tests/helper';
 
-const ruleName = 'example';
+const ruleName = 'require-example';
 
 const { test } = setupHelpers(ruleName);
 

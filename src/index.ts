@@ -9,8 +9,10 @@ type RuleModule = TSESLint.RuleModule<string, unknown[]> & { name: string };
 
 const rules = ruleFolders.reduce<Record<string, RuleModule>>((acc, curr) => {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const rule = require(path.join(rulesDir, curr, 'rule')) as RuleModule;
-  acc[rule.name] = rule;
+  const { rule } = require(path.join(rulesDir, curr, 'rule')) as {
+    rule: RuleModule;
+  };
+  acc[curr] = rule;
   return acc;
 }, {});
 

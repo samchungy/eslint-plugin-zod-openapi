@@ -8,14 +8,14 @@ const isZodPrimative = (type: string): boolean =>
     type,
   );
 
-const getExample = (
+const getDefault = (
   properties: TSESTree.ObjectLiteralElement[],
 ): TSESTree.Property | undefined => {
   for (const property of properties) {
     if (
       property.type === 'Property' &&
       property.key.type === 'Identifier' &&
-      property.key.name === 'example'
+      property.key.name === 'default'
     ) {
       return property;
     }
@@ -23,8 +23,8 @@ const getExample = (
   return undefined;
 };
 
-const testExample = (
-  node: TSESTree.Node,
+const testDefault = (
+  _node: TSESTree.Node,
   context: Readonly<TSESLint.RuleContext<any, any>>,
   openApiCallExpression: TSESTree.CallExpression,
 ) => {
@@ -33,19 +33,16 @@ const testExample = (
     return;
   }
 
-  const example = getExample(argument.properties);
+  const def = getDefault(argument.properties);
 
-  if (!example) {
-    return context.report({
-      messageId: 'required',
-      node: openApiCallExpression,
-    });
-  }
-
-  const parent = node.parent;
-  if (!parent) {
+  if (!def) {
     return;
   }
+
+  return context.report({
+    messageId: 'prefer',
+    node: def,
+  });
 };
 
 // eslint-disable-next-line new-cap
@@ -81,7 +78,7 @@ export const rule = createRule({
           return;
         }
 
-        return testExample(node, context, openApiCallExpression);
+        return testDefault(node, context, openApiCallExpression);
       },
       Property(node) {
         const type = getType(node, context);
@@ -99,16 +96,16 @@ export const rule = createRule({
           return;
         }
 
-        return testExample(node, context, openApiCallExpression);
+        return testDefault(node, context, openApiCallExpression);
       },
     };
   },
-  name: 'open-api-example',
+  name: 'prefer-zod-default',
   meta: {
     fixable: 'code',
     type: 'problem',
     messages: {
-      required: '.openapi() example is required for Zod primatives',
+      prefer: 'use .default() instead of .openapi() default',
     },
     schema: [],
     docs: {

@@ -2,7 +2,7 @@ import { ESLintUtils } from '@typescript-eslint/utils';
 
 import { setupHelpers } from '../../tests/helper';
 
-const ruleName = 'comment';
+const ruleName = 'require-comment';
 
 const { test } = setupHelpers(ruleName);
 

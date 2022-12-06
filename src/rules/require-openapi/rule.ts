@@ -57,7 +57,7 @@ export const rule = createRule({
       },
     };
   },
-  name: 'open-api-required',
+  name: 'require-openapi',
   meta: {
     fixable: 'code',
     type: 'problem',

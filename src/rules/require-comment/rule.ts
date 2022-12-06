@@ -283,7 +283,7 @@ export const rule = createRule({
       },
     };
   },
-  name: 'open-api-comment',
+  name: 'require-comment',
   meta: {
     fixable: 'code',
     type: 'problem',
