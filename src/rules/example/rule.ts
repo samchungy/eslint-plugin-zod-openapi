@@ -1,7 +1,7 @@
 import { ESLintUtils, TSESLint, TSESTree } from '@typescript-eslint/utils';
 
-import { findOpenApiCallExpression } from '../util/traverse';
-import { getType } from '../util/type';
+import { findOpenApiCallExpression } from '../../util/traverse';
+import { getType } from '../../util/type';
 
 const isZodPrimative = (type: string): boolean =>
   ['ZodString', 'ZodNumber', 'ZodEnum', 'ZodBoolean', 'ZodRecord'].includes(

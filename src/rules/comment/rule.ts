@@ -1,7 +1,7 @@
 import { ESLintUtils, TSESLint, TSESTree } from '@typescript-eslint/utils';
 
-import { findOpenApiCallExpression, getCommentNode } from '../util/traverse';
-import { getType } from '../util/type';
+import { findOpenApiCallExpression, getCommentNode } from '../../util/traverse';
+import { getType } from '../../util/type';
 
 const deprecatedTag = '@deprecated';
 
