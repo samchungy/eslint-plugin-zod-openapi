@@ -18,6 +18,7 @@ ruleTester.run(ruleName, rule, {
   valid: [
     test('object-property-description'),
     test('object-property-reference'),
+    // test('object-shape'),
   ],
   invalid: [
     {
@@ -26,6 +27,10 @@ ruleTester.run(ruleName, rule, {
     },
     {
       ...test('object-property-no-description'),
+      errors: [{ messageId: 'open-api-required' }],
+    },
+    {
+      ...test('object-extend'),
       errors: [{ messageId: 'open-api-required' }],
     },
   ],
