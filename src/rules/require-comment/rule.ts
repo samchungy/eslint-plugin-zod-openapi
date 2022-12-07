@@ -3,6 +3,8 @@ import { ESLintUtils, TSESLint, TSESTree } from '@typescript-eslint/utils';
 import { findOpenApiCallExpression, getCommentNode } from '../../util/traverse';
 import { getType } from '../../util/type';
 
+const commentRegex = /\*\n\s+\* (.*)\n/;
+
 const deprecatedTag = '@deprecated';
 
 export const getComment = (
@@ -11,22 +13,17 @@ export const getComment = (
 ): TSESTree.Comment | undefined =>
   context.getSourceCode().getCommentsBefore(node)[0];
 
-interface CommentParams {
-  contents: string;
-  loc: TSESTree.SourceLocation;
-  deprecated: boolean;
-  newline?: boolean;
-}
+const createCommentValue = (contents: string, deprecated: boolean) =>
+  `${deprecated ? `${deprecatedTag} ` : ''}${contents}`;
 
-export const createComment = ({
-  contents,
-  loc,
-  deprecated,
-  newline,
-}: CommentParams) => {
+const createFormattedComment = (
+  contents: string,
+  loc: TSESTree.SourceLocation,
+  newline?: boolean,
+) => {
   const indent = ' '.repeat(loc.start.column);
   return `${newline ? `\n${indent}` : ''}/**
-${indent} * ${deprecated ? `${deprecatedTag} ` : ''}${contents}
+${indent} * ${contents}
 ${indent} */
 ${indent}`;
 };
@@ -151,26 +148,28 @@ export const rule = createRule({
 
         const comment = getComment(commentNode, context);
 
-        if (!comment) {
+        const commentValue = comment?.value
+          ? commentRegex.exec(comment.value)?.[1]
+          : undefined;
+
+        const expectedCommentValue = createCommentValue(
+          descriptionValue,
+          deprecatedValue,
+        );
+
+        if (!comment || !commentValue) {
           return context.report({
             messageId: 'comment',
             node: commentNode,
             fix: (fixer) =>
               fixer.insertTextBefore(
                 commentNode,
-                createComment({
-                  contents: descriptionValue,
-                  loc: commentNode.loc,
-                  deprecated: deprecatedValue,
-                }),
+                createFormattedComment(expectedCommentValue, commentNode.loc),
               ),
           });
         }
 
-        if (
-          !comment.value.includes(descriptionValue) ||
-          deprecatedValue !== comment.value.includes(deprecatedTag)
-        ) {
+        if (expectedCommentValue !== commentValue) {
           return context.report({
             messageId: 'comment',
             node: comment,
@@ -181,11 +180,7 @@ export const rule = createRule({
               ]),
               fixer.insertTextBefore(
                 commentNode,
-                createComment({
-                  contents: descriptionValue,
-                  loc: commentNode.loc,
-                  deprecated: deprecatedValue,
-                }),
+                createFormattedComment(expectedCommentValue, commentNode.loc),
               ),
             ],
           });
@@ -234,31 +229,36 @@ export const rule = createRule({
 
         const comment = getComment(commentNode, context);
 
+        const commentValue = comment?.value
+          ? commentRegex.exec(comment.value)?.[1]
+          : undefined;
+
         const deprecated = getPropertyNode(argument.properties, 'deprecated');
 
         const deprecatedValue = Boolean(deprecated?.value);
 
-        if (!comment) {
+        const expectedCommentValue = createCommentValue(
+          descriptionValue,
+          deprecatedValue,
+        );
+
+        if (!comment || !commentValue) {
           return context.report({
             messageId: 'comment',
             node: commentNode,
             fix: (fixer) =>
               fixer.insertTextBefore(
                 commentNode,
-                createComment({
-                  contents: descriptionValue,
-                  loc: commentNode.loc,
-                  deprecated: deprecatedValue,
-                  newline: isNewLineRequired(node),
-                }),
+                createFormattedComment(
+                  expectedCommentValue,
+                  commentNode.loc,
+                  isNewLineRequired(node),
+                ),
               ),
           });
         }
 
-        if (
-          !comment.value.includes(descriptionValue) ||
-          deprecatedValue !== comment.value.includes(deprecatedTag)
-        ) {
+        if (expectedCommentValue !== commentValue) {
           return context.report({
             messageId: 'comment',
             node: comment,
@@ -269,11 +269,11 @@ export const rule = createRule({
               ]),
               fixer.insertTextBefore(
                 commentNode,
-                createComment({
-                  contents: descriptionValue,
-                  loc: commentNode.loc,
-                  deprecated: deprecatedValue,
-                }),
+                createFormattedComment(
+                  expectedCommentValue,
+                  commentNode.loc,
+                  isNewLineRequired(node),
+                ),
               ),
             ],
           });

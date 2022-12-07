@@ -24,6 +24,10 @@ ruleTester.run(ruleName, rule, {
   ],
   invalid: [
     {
+      ...test('string-description-wrong-comment', true),
+      errors: [{ messageId: 'comment' }],
+    },
+    {
       ...test('string-no-description'),
       errors: [{ messageId: 'required' }],
     },
@@ -85,5 +89,9 @@ ruleTester.run(ruleName, rule, {
       ...test('string-deprecation-change-description', true),
       errors: [{ messageId: 'comment' }],
     },
+    // {
+    //   ...test('string-inferred-comment'),
+    //   errors: [{ messageId: 'comment' }],
+    // },
   ],
 });
