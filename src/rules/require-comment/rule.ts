@@ -148,16 +148,12 @@ export const rule = createRule({
 
         const comment = getComment(commentNode, context);
 
-        const commentValue = comment?.value
-          ? commentRegex.exec(comment.value)?.[1]
-          : undefined;
-
         const expectedCommentValue = createCommentValue(
           descriptionValue,
           deprecatedValue,
         );
 
-        if (!comment || !commentValue) {
+        if (!comment) {
           return context.report({
             messageId: 'comment',
             node: commentNode,
@@ -169,7 +165,9 @@ export const rule = createRule({
           });
         }
 
-        if (expectedCommentValue !== commentValue) {
+        const commentValue = commentRegex.exec(comment.value)?.[1];
+
+        if (!commentValue || expectedCommentValue !== commentValue) {
           return context.report({
             messageId: 'comment',
             node: comment,
@@ -229,10 +227,6 @@ export const rule = createRule({
 
         const comment = getComment(commentNode, context);
 
-        const commentValue = comment?.value
-          ? commentRegex.exec(comment.value)?.[1]
-          : undefined;
-
         const deprecated = getPropertyNode(argument.properties, 'deprecated');
 
         const deprecatedValue = Boolean(deprecated?.value);
@@ -242,7 +236,7 @@ export const rule = createRule({
           deprecatedValue,
         );
 
-        if (!comment || !commentValue) {
+        if (!comment) {
           return context.report({
             messageId: 'comment',
             node: commentNode,
@@ -258,7 +252,9 @@ export const rule = createRule({
           });
         }
 
-        if (expectedCommentValue !== commentValue) {
+        const commentValue = commentRegex.exec(comment.value)?.[1];
+
+        if (!commentValue || expectedCommentValue !== commentValue) {
           return context.report({
             messageId: 'comment',
             node: comment,
