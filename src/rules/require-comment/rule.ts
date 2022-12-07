@@ -1,4 +1,5 @@
 import { ESLintUtils, TSESLint, TSESTree } from '@typescript-eslint/utils';
+import ts from 'typescript';
 
 import { findOpenApiCallExpression, getCommentNode } from '../../util/traverse';
 import { getType } from '../../util/type';
@@ -82,6 +83,82 @@ const getPropertyNode = (
   return undefined;
 };
 
+const getInferredComment = <T extends TSESTree.Node>(
+  node: T,
+  context: Readonly<TSESLint.RuleContext<any, any>>,
+): string | undefined => {
+  // 1. Grab the TypeScript program from parser services
+  const parserServices = ESLintUtils.getParserServices(context);
+  const checker = parserServices.program.getTypeChecker();
+
+  // 2. Find the backing TS node for the ES node, then that TS type
+  const originalNode = parserServices.esTreeNodeToTSNodeMap.get(node);
+  const symbol = checker.getSymbolAtLocation(originalNode);
+
+  if (symbol) {
+    return ts.displayPartsToString(symbol.getDocumentationComment(checker));
+  }
+};
+
+const getExpectedCommentValue = (
+  node: TSESTree.VariableDeclarator | TSESTree.Property,
+  context: Readonly<TSESLint.RuleContext<any, any>>,
+) => {
+  const openApiCallExpression = findOpenApiCallExpression(node);
+  if (!openApiCallExpression) {
+    if (node.type === 'VariableDeclarator') {
+      if (node.init?.type !== 'Identifier') {
+        return;
+      }
+      return getInferredComment(node.init, context);
+    }
+
+    const value = node.value;
+    if (
+      value.type === 'MemberExpression' &&
+      value.property.type === 'Identifier'
+    ) {
+      return getInferredComment(value.property, context);
+    }
+
+    return;
+  }
+
+  const argument = openApiCallExpression?.arguments[0];
+  if (!argument || argument.type !== 'ObjectExpression') {
+    return;
+  }
+
+  const description = getPropertyNode(argument.properties, 'description');
+
+  if (!description) {
+    return context.report({
+      messageId: 'required',
+      node: openApiCallExpression,
+    });
+  }
+
+  const descriptionValue = description.value;
+
+  if (typeof descriptionValue !== 'string') {
+    // would be handled by ts
+    return;
+  }
+
+  if (!descriptionValue.length) {
+    return context.report({
+      messageId: 'required',
+      node: description.property,
+    });
+  }
+
+  const deprecated = getPropertyNode(argument.properties, 'deprecated');
+
+  const deprecatedValue = Boolean(deprecated?.value);
+
+  return createCommentValue(descriptionValue, deprecatedValue);
+};
+
 // eslint-disable-next-line new-cap
 const createRule = ESLintUtils.RuleCreator(
   (name) => `https://example.com/rule/${name}`,
@@ -96,62 +173,24 @@ export const rule = createRule({
           return;
         }
 
-        if (declarator.init?.type === 'Identifier') {
-          return;
-        }
-
         const type = getType(declarator, context);
 
         if (!type?.isZodType) {
           return;
         }
 
-        const openApiCallExpression = findOpenApiCallExpression(declarator);
+        const expectedCommentValue = getExpectedCommentValue(
+          declarator,
+          context,
+        );
 
-        if (!openApiCallExpression) {
+        if (!expectedCommentValue) {
           return;
         }
-
-        const argument = openApiCallExpression?.arguments[0];
-        if (!argument || argument.type !== 'ObjectExpression') {
-          return;
-        }
-
-        const description = getPropertyNode(argument.properties, 'description');
-
-        if (!description) {
-          return context.report({
-            messageId: 'required',
-            node: openApiCallExpression,
-          });
-        }
-
-        const descriptionValue = description.value;
-
-        if (typeof descriptionValue !== 'string') {
-          // would be handled by ts
-          return;
-        }
-
-        if (!descriptionValue.length) {
-          return context.report({
-            messageId: 'required',
-            node: description.property,
-          });
-        }
-
-        const deprecated = getPropertyNode(argument.properties, 'deprecated');
-
-        const deprecatedValue = Boolean(deprecated?.value);
 
         const commentNode = getCommentNode(node);
 
         const comment = getComment(commentNode, context);
-
-        const expectedCommentValue = createCommentValue(
-          descriptionValue,
-          deprecatedValue,
-        );
 
         if (!comment) {
           return context.report({
@@ -190,51 +229,15 @@ export const rule = createRule({
           return;
         }
 
-        const openApiCallExpression = findOpenApiCallExpression(node);
+        const expectedCommentValue = getExpectedCommentValue(node, context);
 
-        if (!openApiCallExpression) {
+        if (!expectedCommentValue) {
           return;
-        }
-
-        const argument = openApiCallExpression?.arguments[0];
-        if (!argument || argument.type !== 'ObjectExpression') {
-          return;
-        }
-
-        const description = getPropertyNode(argument.properties, 'description');
-
-        if (!description) {
-          return context.report({
-            messageId: 'required',
-            node: openApiCallExpression,
-          });
-        }
-
-        const descriptionValue = description.value;
-
-        if (typeof descriptionValue !== 'string') {
-          return;
-        }
-
-        if (!descriptionValue.length) {
-          return context.report({
-            messageId: 'required',
-            node: description.property,
-          });
         }
 
         const commentNode = node;
 
         const comment = getComment(commentNode, context);
-
-        const deprecated = getPropertyNode(argument.properties, 'deprecated');
-
-        const deprecatedValue = Boolean(deprecated?.value);
-
-        const expectedCommentValue = createCommentValue(
-          descriptionValue,
-          deprecatedValue,
-        );
 
         if (!comment) {
           return context.report({
