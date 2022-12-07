@@ -1,7 +1,7 @@
 import { ESLintUtils } from '@typescript-eslint/utils';
 
 import { findOpenApiCallExpression } from '../../util/traverse';
-import { getType } from '../../util/type';
+import { getInferredComment, getType } from '../../util/type';
 
 // eslint-disable-next-line new-cap
 const createRule = ESLintUtils.RuleCreator(
@@ -17,10 +17,6 @@ export const rule = createRule({
           return;
         }
 
-        if (declarator.init?.type === 'Identifier') {
-          return;
-        }
-
         const type = getType(declarator, context);
 
         if (!type?.isZodType) {
@@ -29,7 +25,10 @@ export const rule = createRule({
 
         const openApiCallExpression = findOpenApiCallExpression(declarator);
 
-        if (!openApiCallExpression) {
+        if (
+          !openApiCallExpression &&
+          !getInferredComment(declarator, context)
+        ) {
           return context.report({
             messageId: 'open-api-required',
             node: declarator,
@@ -44,11 +43,7 @@ export const rule = createRule({
 
         const openApiCallExpression = findOpenApiCallExpression(node);
 
-        if (node.value.type === 'Identifier') {
-          return;
-        }
-
-        if (!openApiCallExpression) {
+        if (!openApiCallExpression && !getInferredComment(node, context)) {
           return context.report({
             messageId: 'open-api-required',
             node,

@@ -18,7 +18,7 @@ ruleTester.run(ruleName, rule, {
   valid: [
     test('object-property-description'),
     test('object-property-reference'),
-    // test('object-shape'),
+    test('object-shape'),
   ],
   invalid: [
     {

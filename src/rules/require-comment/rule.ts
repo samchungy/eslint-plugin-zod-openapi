@@ -1,8 +1,7 @@
 import { ESLintUtils, TSESLint, TSESTree } from '@typescript-eslint/utils';
-import ts from 'typescript';
 
 import { findOpenApiCallExpression, getCommentNode } from '../../util/traverse';
-import { getType } from '../../util/type';
+import { getInferredComment, getType } from '../../util/type';
 
 const commentRegex = /\*\n\s+\* (.*)\n/;
 
@@ -83,45 +82,13 @@ const getPropertyNode = (
   return undefined;
 };
 
-const getInferredComment = <T extends TSESTree.Node>(
-  node: T,
-  context: Readonly<TSESLint.RuleContext<any, any>>,
-): string | undefined => {
-  // 1. Grab the TypeScript program from parser services
-  const parserServices = ESLintUtils.getParserServices(context);
-  const checker = parserServices.program.getTypeChecker();
-
-  // 2. Find the backing TS node for the ES node, then that TS type
-  const originalNode = parserServices.esTreeNodeToTSNodeMap.get(node);
-  const symbol = checker.getSymbolAtLocation(originalNode);
-
-  if (symbol) {
-    return ts.displayPartsToString(symbol.getDocumentationComment(checker));
-  }
-};
-
 const getExpectedCommentValue = (
   node: TSESTree.VariableDeclarator | TSESTree.Property,
   context: Readonly<TSESLint.RuleContext<any, any>>,
 ) => {
   const openApiCallExpression = findOpenApiCallExpression(node);
   if (!openApiCallExpression) {
-    if (node.type === 'VariableDeclarator') {
-      if (node.init?.type !== 'Identifier') {
-        return;
-      }
-      return getInferredComment(node.init, context);
-    }
-
-    const value = node.value;
-    if (
-      value.type === 'MemberExpression' &&
-      value.property.type === 'Identifier'
-    ) {
-      return getInferredComment(value.property, context);
-    }
-
-    return;
+    return getInferredComment(node, context);
   }
 
   const argument = openApiCallExpression?.arguments[0];

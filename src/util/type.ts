@@ -22,35 +22,6 @@ const getType = <T extends TSESTree.Node>(
   const nodeType = checker.getTypeAtLocation(originalNode);
   const escapedName = nodeType.symbol?.escapedName?.toString();
 
-  // for (const sourceFile of parserServices.program.getSourceFiles()) {
-  //   if (!sourceFile.isDeclarationFile) {
-  //     ts.forEachChild(sourceFile, visit);
-  //   }
-  // }
-
-  // function visit(node1: ts.Node) {
-  //   const count = node1.getChildCount();
-
-  //   if (count > 0) {
-  //     ts.forEachChild(node1, visit);
-  //   }
-
-  //   const symbol = checker.getSymbolAtLocation(node1.name);
-  //   if (symbol) {
-  //     const a = serializeSymbol(symbol);
-  //     console.log(a);
-  //   }
-  // }
-
-  // function serializeSymbol(symbol: ts.Symbol) {
-  //   return {
-  // name: symbol.getName(),
-  // comment: ts.displayPartsToString(symbol.getDocumentationComment(checker)),
-  // type: checker.typeToString(
-  //   checker.getTypeOfSymbolAtLocation(symbol, symbol.valueDeclaration!),
-  // ),
-  //   };
-  // }
   return {
     originalNode,
     nodeType,
@@ -58,4 +29,52 @@ const getType = <T extends TSESTree.Node>(
     isZodType: Boolean(escapedName?.includes('Zod')),
   };
 };
-export { getType };
+
+const getIdentifier = <T extends TSESTree.Node>(
+  node: T,
+): TSESTree.Identifier | undefined => {
+  if (node.type === 'Identifier') {
+    return node;
+  }
+
+  if (node.type === 'VariableDeclarator') {
+    if (!node.init) {
+      return;
+    }
+    return getIdentifier(node.init);
+  }
+
+  if (node.type === 'Property') {
+    return getIdentifier(node.value);
+  }
+
+  if (node.type === 'MemberExpression') {
+    return getIdentifier(node.property);
+  }
+
+  return;
+};
+
+const getInferredComment = <T extends TSESTree.Node>(
+  node: T,
+  context: Readonly<TSESLint.RuleContext<any, any>>,
+): string | undefined => {
+  const identifier = getIdentifier(node);
+  if (!identifier) {
+    return;
+  }
+  // 1. Grab the TypeScript program from parser services
+  const parserServices = ESLintUtils.getParserServices(context);
+  const checker = parserServices.program.getTypeChecker();
+
+  // 2. Find the backing TS node for the ES node, then that TS type
+  const originalNode = parserServices.esTreeNodeToTSNodeMap.get(identifier);
+  const symbol = checker.getSymbolAtLocation(originalNode);
+
+  if (symbol) {
+    return ts.displayPartsToString(symbol.getDocumentationComment(checker));
+  }
+  return;
+};
+
+export { getType, getInferredComment };
