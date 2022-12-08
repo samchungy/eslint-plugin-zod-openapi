@@ -19,6 +19,7 @@ ruleTester.run(ruleName, rule, {
     test('object-property-description'),
     test('object-property-reference'),
     test('object-shape'),
+    test('literal-no-openapi'),
   ],
   invalid: [
     {

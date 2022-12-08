@@ -19,7 +19,7 @@ export const rule = createRule({
 
         const type = getType(declarator, context);
 
-        if (!type?.isZodType) {
+        if (!type?.isZodType || type.type === 'ZodLiteral') {
           return;
         }
 
@@ -37,7 +37,8 @@ export const rule = createRule({
       },
       Property(node) {
         const type = getType(node, context);
-        if (!type?.isZodType) {
+
+        if (!type?.isZodType || type.type === 'ZodLiteral') {
           return;
         }
 
