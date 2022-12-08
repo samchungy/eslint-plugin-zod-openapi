@@ -47,6 +47,9 @@ const getInferredComment = <T extends TSESTree.Node>(
     return;
   }
   const baseIdentifier = getBaseIdentifier(identifier);
+  if (!baseIdentifier) {
+    return;
+  }
 
   // 1. Grab the TypeScript program from parser services
   const parserServices = ESLintUtils.getParserServices(context);

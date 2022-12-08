@@ -21,6 +21,7 @@ ruleTester.run(ruleName, rule, {
     test('object-shape'),
     test('literal-no-openapi'),
     test('optional-no-openapi'),
+    test('object-property-optional-no-openapi'),
   ],
   invalid: [
     {
@@ -33,6 +34,10 @@ ruleTester.run(ruleName, rule, {
     },
     {
       ...test('object-extend'),
+      errors: [{ messageId: 'open-api-required' }],
+    },
+    {
+      ...test('registry'),
       errors: [{ messageId: 'open-api-required' }],
     },
   ],
