@@ -61,11 +61,10 @@ const getInferredComment = <T extends TSESTree.Node>(
     if (!comment) {
       const jsDoc = symbol.getJsDocTags(checker);
       const deprecated = jsDoc.find((doc) => doc.name === 'deprecated');
-      const reason = deprecated?.text?.[0].text;
-      if (!deprecated || !reason) {
-        return;
-      }
-      return `@deprecated ${reason}`;
+      const tags = jsDoc.map(
+        (doc) => `@${doc.name} ${deprecated?.text?.[0].text ?? ''}`,
+      );
+      return tags.join(' ');
     }
     return comment;
   }
