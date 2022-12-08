@@ -55,7 +55,19 @@ const getInferredComment = <T extends TSESTree.Node>(
   const symbol = checker.getSymbolAtLocation(originalNode);
 
   if (symbol) {
-    return ts.displayPartsToString(symbol.getDocumentationComment(checker));
+    const comment = ts.displayPartsToString(
+      symbol.getDocumentationComment(checker),
+    );
+    if (!comment) {
+      const jsDoc = symbol.getJsDocTags(checker);
+      const deprecated = jsDoc.find((doc) => doc.name === 'deprecated');
+      const reason = deprecated?.text?.[0].text;
+      if (!deprecated || !reason) {
+        return;
+      }
+      return `@deprecated ${reason}`;
+    }
+    return comment;
   }
   return;
 };

@@ -97,5 +97,9 @@ ruleTester.run(ruleName, rule, {
       ...test('object-property-referenced', true),
       errors: [{ messageId: 'comment' }],
     },
+    {
+      ...test('string-referenced-deprecated', true),
+      errors: [{ messageId: 'comment' }],
+    },
   ],
 });
