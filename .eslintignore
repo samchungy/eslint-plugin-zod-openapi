@@ -13,6 +13,4 @@ node_modules*/
 /tmp*/
 # end managed by skuba
 
-.eslintignore
-
 src/rules/**/tests/*-disable-lint*.ts
