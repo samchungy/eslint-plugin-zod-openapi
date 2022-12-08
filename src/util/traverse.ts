@@ -44,36 +44,31 @@ export const findOpenApiCallExpression = (
   return;
 };
 
-const findLastNodeInChain = (
-  root: TSESTree.CallExpression,
-): TSESTree.CallExpression => {
-  const callee = root.callee;
-  if (callee.type !== 'MemberExpression') {
-    return root;
+export const getIdentifier = <T extends TSESTree.Node>(
+  node: T,
+): TSESTree.Identifier | undefined => {
+  if (node.type === 'Identifier') {
+    return node;
   }
 
-  if (callee.object.type === 'CallExpression') {
-    return findLastNodeInChain(callee.object);
+  if (node.type === 'VariableDeclarator') {
+    if (!node.init) {
+      return;
+    }
+    return getIdentifier(node.init);
   }
 
-  return root;
-};
-
-export const findLastNode = (
-  declarator: TSESTree.VariableDeclarator,
-): TSESTree.Node => {
-  const init = declarator.init;
-  if (!init || init.type !== 'CallExpression') {
-    return declarator;
+  if (node.type === 'Property') {
+    return getIdentifier(node.value);
   }
 
-  return findLastNodeInChain(init);
-};
-
-export const getCommentNode = (node: TSESTree.Node): TSESTree.Node => {
-  if (node.parent?.type === 'ExportNamedDeclaration') {
-    return node.parent;
+  if (node.type === 'MemberExpression') {
+    return getIdentifier(node.property);
   }
 
-  return node;
+  if (node.type === 'CallExpression') {
+    return getIdentifier(node.callee);
+  }
+
+  return;
 };

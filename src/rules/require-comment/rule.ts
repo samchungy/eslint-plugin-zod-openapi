@@ -1,11 +1,19 @@
 import { ESLintUtils, TSESLint, TSESTree } from '@typescript-eslint/utils';
 
-import { findOpenApiCallExpression, getCommentNode } from '../../util/traverse';
+import { findOpenApiCallExpression } from '../../util/traverse';
 import { getInferredComment, getType } from '../../util/type';
 
 const commentRegex = /\*\n\s+\* (.*)\n/;
 
 const deprecatedTag = '@deprecated';
+
+export const getCommentNode = (node: TSESTree.Node): TSESTree.Node => {
+  if (node.parent?.type === 'ExportNamedDeclaration') {
+    return node.parent;
+  }
+
+  return node;
+};
 
 export const getComment = (
   node: TSESTree.Node,

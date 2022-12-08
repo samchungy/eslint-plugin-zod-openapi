@@ -54,10 +54,6 @@ export const rule = createRule({
           return;
         }
 
-        if (declarator.init?.type === 'Identifier') {
-          return;
-        }
-
         const type = getType(declarator, context);
         if (!type?.isZodType) {
           return;

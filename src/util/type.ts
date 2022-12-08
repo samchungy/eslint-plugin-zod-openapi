@@ -1,6 +1,8 @@
 import { ESLintUtils, TSESLint, TSESTree } from '@typescript-eslint/utils';
 import ts from 'typescript';
 
+import { getIdentifier } from './traverse';
+
 const getType = <T extends TSESTree.Node>(
   node: T,
   context: Readonly<TSESLint.RuleContext<any, any>>,
@@ -34,31 +36,6 @@ const getType = <T extends TSESTree.Node>(
       'ZodRecord',
     ].includes(type),
   };
-};
-
-const getIdentifier = <T extends TSESTree.Node>(
-  node: T,
-): TSESTree.Identifier | undefined => {
-  if (node.type === 'Identifier') {
-    return node;
-  }
-
-  if (node.type === 'VariableDeclarator') {
-    if (!node.init) {
-      return;
-    }
-    return getIdentifier(node.init);
-  }
-
-  if (node.type === 'Property') {
-    return getIdentifier(node.value);
-  }
-
-  if (node.type === 'MemberExpression') {
-    return getIdentifier(node.property);
-  }
-
-  return;
 };
 
 const getInferredComment = <T extends TSESTree.Node>(
