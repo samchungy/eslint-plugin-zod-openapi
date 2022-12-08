@@ -72,3 +72,15 @@ export const getIdentifier = <T extends TSESTree.Node>(
 
   return;
 };
+
+export const getBaseIdentifier = (
+  identifier: TSESTree.Identifier,
+): TSESTree.Node => {
+  if (
+    identifier.name === 'optional' &&
+    identifier.parent?.type === 'MemberExpression'
+  ) {
+    return identifier.parent.object;
+  }
+  return identifier;
+};

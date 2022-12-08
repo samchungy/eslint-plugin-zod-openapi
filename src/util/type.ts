@@ -1,7 +1,7 @@
 import { ESLintUtils, TSESLint, TSESTree } from '@typescript-eslint/utils';
 import ts from 'typescript';
 
-import { getIdentifier } from './traverse';
+import { getBaseIdentifier, getIdentifier } from './traverse';
 
 const getType = <T extends TSESTree.Node>(
   node: T,
@@ -46,12 +46,14 @@ const getInferredComment = <T extends TSESTree.Node>(
   if (!identifier) {
     return;
   }
+  const baseIdentifier = getBaseIdentifier(identifier);
+
   // 1. Grab the TypeScript program from parser services
   const parserServices = ESLintUtils.getParserServices(context);
   const checker = parserServices.program.getTypeChecker();
 
   // 2. Find the backing TS node for the ES node, then that TS type
-  const originalNode = parserServices.esTreeNodeToTSNodeMap.get(identifier);
+  const originalNode = parserServices.esTreeNodeToTSNodeMap.get(baseIdentifier);
   const symbol = checker.getSymbolAtLocation(originalNode);
 
   if (symbol) {
