@@ -8,7 +8,4 @@ extendZodWithOpenApi(z);
 
 const registry = new OpenAPIRegistry();
 
-export const ZodObject = registry.register(
-  'registered',
-  z.string().openapi({ description: 'hello' }),
-);
+export const ZodObject = registry.register('registered', z.string());

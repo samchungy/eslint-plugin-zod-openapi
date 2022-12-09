@@ -19,7 +19,7 @@ export const rule = createRule({
 
         const type = getType(declarator, context);
 
-        if (!type?.isZodType || type.type === 'ZodLiteral') {
+        if (!type?.isZodType || type.name === 'ZodLiteral') {
           return;
         }
 
@@ -38,7 +38,7 @@ export const rule = createRule({
       Property(node) {
         const type = getType(node, context);
 
-        if (!type?.isZodType || type.type === 'ZodLiteral') {
+        if (!type?.isZodType || type.name === 'ZodLiteral') {
           return;
         }
 
@@ -48,6 +48,48 @@ export const rule = createRule({
           return context.report({
             messageId: 'open-api-required',
             node,
+          });
+        }
+      },
+      MemberExpression(node) {
+        if (
+          node.property.type !== 'Identifier' ||
+          node.property.name !== 'register'
+        ) {
+          return;
+        }
+        const type = getType(node, context);
+        if (
+          type?.name !== 'register' ||
+          !type.type.includes('T extends ZodType')
+        ) {
+          return;
+        }
+
+        const parent = node.parent;
+
+        if (parent?.type !== 'CallExpression') {
+          return;
+        }
+
+        const argument = parent.arguments?.[1];
+
+        if (!argument) {
+          return;
+        }
+
+        const argumentType = getType(argument, context);
+
+        if (!argumentType?.isZodType || argumentType.name === 'ZodLiteral') {
+          return;
+        }
+
+        const openApiCallExpression = findOpenApiCallExpression(argument);
+
+        if (!openApiCallExpression && !getInferredComment(argument, context)) {
+          return context.report({
+            messageId: 'open-api-required',
+            node: argument,
           });
         }
       },

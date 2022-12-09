@@ -9,8 +9,14 @@ const findOpenApiInChain = (
   }
 
   const property = callee.property;
-  if (property.type === 'Identifier' && property.name === 'openapi') {
-    return root;
+  if (property.type === 'Identifier') {
+    if (property.name === 'openapi') {
+      return root;
+    }
+
+    if (property.name === 'register' && root.arguments?.[1]) {
+      return findOpenApiCallExpression(root.arguments[1]);
+    }
   }
 
   if (callee.object.type === 'CallExpression') {
@@ -21,7 +27,10 @@ const findOpenApiInChain = (
 };
 
 export const findOpenApiCallExpression = (
-  node: TSESTree.VariableDeclarator | TSESTree.Property,
+  node:
+    | TSESTree.VariableDeclarator
+    | TSESTree.Property
+    | TSESTree.CallExpressionArgument,
 ): TSESTree.CallExpression | undefined => {
   if (node.type === 'VariableDeclarator') {
     const init = node.init;
@@ -41,7 +50,11 @@ export const findOpenApiCallExpression = (
     return findOpenApiInChain(value);
   }
 
-  return;
+  if (node.type === 'CallExpression') {
+    return findOpenApiInChain(node);
+  }
+
+  return undefined;
 };
 
 export const getIdentifier = <T extends TSESTree.Node>(
@@ -78,11 +91,18 @@ export const getBaseIdentifier = (
 ): TSESTree.Node | undefined => {
   if (
     identifier.name === 'register' &&
-    identifier.parent?.type === 'MemberExpression'
+    identifier.parent?.type === 'MemberExpression' &&
+    identifier.parent.parent?.type === 'CallExpression'
   ) {
-    return;
+    const callExpression = identifier.parent.parent;
+    if (!callExpression) {
+      return;
+    }
+
+    return callExpression.arguments?.[2];
   }
 
+  // Ignore .optional()
   if (
     identifier.name === 'optional' &&
     identifier.parent?.type === 'MemberExpression'

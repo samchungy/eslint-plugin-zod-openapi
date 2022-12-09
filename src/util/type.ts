@@ -8,6 +8,7 @@ const getType = <T extends TSESTree.Node>(
   context: Readonly<TSESLint.RuleContext<any, any>>,
 ):
   | {
+      name: string;
       type: string;
       isZodType: boolean;
       isZodPrimative: boolean;
@@ -23,18 +24,26 @@ const getType = <T extends TSESTree.Node>(
   if (!nodeType.symbol) {
     return;
   }
-  const type = nodeType.symbol.escapedName.toString();
+
+  const type = checker.typeToString(
+    checker.getTypeOfSymbolAtLocation(
+      nodeType.symbol,
+      nodeType.symbol.valueDeclaration!,
+    ),
+  );
+  const name = nodeType.symbol.getName();
 
   return {
+    name: nodeType.symbol.getName(),
     type,
-    isZodType: type.includes('Zod'),
+    isZodType: name.includes('Zod'),
     isZodPrimative: [
       'ZodString',
       'ZodNumber',
       'ZodEnum',
       'ZodBoolean',
       'ZodRecord',
-    ].includes(type),
+    ].includes(name),
   };
 };
 
