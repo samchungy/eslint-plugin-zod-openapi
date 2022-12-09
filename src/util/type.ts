@@ -40,7 +40,6 @@ const getType = <T extends TSESTree.Node>(
     isZodPrimative: [
       'ZodString',
       'ZodNumber',
-      'ZodEnum',
       'ZodBoolean',
       'ZodRecord',
     ].includes(name),
