@@ -1,4 +1,4 @@
-import { ESLintUtils } from '@typescript-eslint/utils';
+import { ESLintUtils, TSESTree } from '@typescript-eslint/utils';
 
 import { findOpenApiCallExpression, getIdentifier } from '../../util/traverse';
 import { getType } from '../../util/type';
@@ -7,6 +7,12 @@ import { getType } from '../../util/type';
 const createRule = ESLintUtils.RuleCreator(
   (name) => `https://example.com/rule/${name}`,
 );
+
+const isInRegister = (callExpression: TSESTree.CallExpression) =>
+  callExpression.parent?.type === 'CallExpression' &&
+  callExpression.parent.callee.type === 'MemberExpression' &&
+  callExpression.parent.callee.property.type === 'Identifier' &&
+  callExpression.parent.callee.property.name === 'register';
 
 export const rule = createRule({
   create(context) {
@@ -24,7 +30,7 @@ export const rule = createRule({
 
         const openApiCallExpression = findOpenApiCallExpression(declarator);
 
-        if (!openApiCallExpression) {
+        if (!openApiCallExpression || isInRegister(openApiCallExpression)) {
           return;
         }
 
@@ -55,7 +61,7 @@ export const rule = createRule({
 
         const openApiCallExpression = findOpenApiCallExpression(node);
 
-        if (!openApiCallExpression) {
+        if (!openApiCallExpression || isInRegister(openApiCallExpression)) {
           return;
         }
 

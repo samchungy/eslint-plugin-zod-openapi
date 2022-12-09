@@ -16,7 +16,7 @@ const ruleTester = new ESLintUtils.RuleTester({
 });
 
 ruleTester.run(ruleName, rule, {
-  valid: [],
+  valid: [test('registry')],
   invalid: [
     {
       ...test('string-default-last'),
