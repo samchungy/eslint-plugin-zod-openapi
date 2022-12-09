@@ -31,7 +31,7 @@ export const rule = createRule({
         ) {
           return context.report({
             messageId: 'open-api-required',
-            node: declarator,
+            node: declarator.id,
           });
         }
       },
@@ -47,7 +47,7 @@ export const rule = createRule({
         if (!openApiCallExpression && !getInferredComment(node, context)) {
           return context.report({
             messageId: 'open-api-required',
-            node,
+            node: node.key,
           });
         }
       },
