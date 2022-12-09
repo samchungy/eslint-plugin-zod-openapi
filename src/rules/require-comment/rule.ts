@@ -18,8 +18,10 @@ export const getCommentNode = (node: TSESTree.Node): TSESTree.Node => {
 export const getComment = (
   node: TSESTree.Node,
   context: Readonly<TSESLint.RuleContext<any, any>>,
-): TSESTree.Comment | undefined =>
-  context.getSourceCode().getCommentsBefore(node)[0];
+): TSESTree.BlockComment | undefined => {
+  const comment = context.getSourceCode().getCommentsBefore(node).at(-1);
+  return comment?.type === 'Block' ? comment : undefined;
+};
 
 const createCommentValue = (contents: string, deprecated: boolean) =>
   `${deprecated ? `${deprecatedTag} ` : ''}${contents}`;

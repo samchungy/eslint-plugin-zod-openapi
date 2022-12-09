@@ -21,7 +21,7 @@ ruleTester.run(ruleName, rule, {
     test('object-property-description'),
     test('string-deprecated'),
     test('object-property-deprecated'),
-    // test('string-inline-comment'),
+    test('string-inline-comment'),
   ],
   invalid: [
     {
