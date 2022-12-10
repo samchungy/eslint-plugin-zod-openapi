@@ -182,7 +182,7 @@ const PersonSchema = z
     /**
      * @deprecated A user's name  // ℹ️ this comment is copied across from NameSchema
      **/
-    name: N̶a̶m̶e̶S̶c̶h̶e̶m̶a̶, // ℹ️ Any type referencing PersonSchema.name will be also marked as deprecated
+    name: NameSchema, // ℹ️ This type will be marked as deprecated in your IDE
     /**
      * A user's age
      **/
