@@ -4,8 +4,6 @@
 [![npm downloads](https://img.shields.io/npm/dm/eslint-plugin-zod-to-openapi)](https://www.npmjs.com/package/eslint-plugin-zod-to-openapi)
 [![Powered by skuba](https://img.shields.io/badge/🤿%20skuba-powered-009DC4)](https://github.com/seek-oss/skuba)
 
-Eslint rules for [@asteasolutions/zod-to-openapi]
-
 ## Intoduction
 
 This is a set of Eslint rules created for use with [@asteasolutions/zod-to-openapi]. As a contributor and major user of the library, there are some learnings and difficulties with using the library by itself and this repository hopes to address those issues.
