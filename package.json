@@ -25,15 +25,10 @@
     "build": "skuba build --module CommonJS --outDir lib-commonjs --project tsconfig.build.json && skuba build --allowJS false --declaration --emitDeclarationOnly --outDir lib-types --project tsconfig.build.json",
     "format": "skuba format",
     "lint": "skuba lint",
-    "release": "yarn build && skuba release",
+    "release": "yarn build && npm publish",
     "test": "skuba test",
     "test:ci": "skuba test --coverage",
     "test:watch": "skuba test --watch"
-  },
-  "config": {
-    "commitizen": {
-      "path": "cz-conventional-changelog"
-    }
   },
   "dependencies": {
     "@typescript-eslint/utils": "^5.45.0"
@@ -41,7 +36,6 @@
   "devDependencies": {
     "@asteasolutions/zod-to-openapi": "3.1.0",
     "@types/node": "16.11.64",
-    "commitizen": "^4.2.4",
     "skuba": "5.0.1",
     "zod": "3.19.1"
   },
