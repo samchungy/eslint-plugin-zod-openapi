@@ -15,7 +15,7 @@ It is easy to forget to add `.openapi()` to your Zod types.
 Solution: [require-openapi](#require-openapi)
 
 ```ts
-const a = z.string().uuid().openapi({ description: 'hello world' }); // ℹ️ hello world is not in the IDE type
+const a = z.string().uuid().openapi({ description: 'hello world' });
 const b = z.string().openapi().uuid();
 ```
 
