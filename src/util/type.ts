@@ -3,11 +3,29 @@ import ts from 'typescript';
 
 import { getBaseIdentifier, getIdentifier } from './traverse';
 
+const getPropType = (
+  checker: ts.TypeChecker,
+  nodeType: ts.Type,
+  property: string,
+) => {
+  const prop = nodeType.getProperty(property);
+  if (!prop) {
+    return;
+  }
+  const propSymbol = checker.getTypeOfSymbolAtLocation(
+    prop,
+    prop.valueDeclaration!,
+  );
+  return checker.typeToString(propSymbol);
+};
+
 const getType = <T extends TSESTree.Node>(
   node: T,
   context: Readonly<TSESLint.RuleContext<any, any>>,
 ):
   | {
+      defType: string;
+      unwrapType: string | undefined;
       name: string;
       type: string;
       isZodType: boolean;
@@ -21,20 +39,34 @@ const getType = <T extends TSESTree.Node>(
   // 2. Find the backing TS node for the ES node, then that TS type
   const originalNode = parserServices.esTreeNodeToTSNodeMap.get(node);
   const nodeType = checker.getTypeAtLocation(originalNode);
-  if (!nodeType.symbol) {
+
+  const defType = getPropType(checker, nodeType, '_def');
+  if (!defType) {
     return;
   }
 
-  const type = checker.typeToString(
-    checker.getTypeOfSymbolAtLocation(
-      nodeType.symbol,
-      nodeType.symbol.valueDeclaration!,
-    ),
+  const maybeUnwrapType = getPropType(checker, nodeType, 'unwrap');
+  const unwrapType = maybeUnwrapType?.startsWith('() => ')
+    ? maybeUnwrapType.slice(6)
+    : undefined;
+
+  const symbol = nodeType.getSymbol();
+  if (!symbol) {
+    return;
+  }
+
+  const constructorType = checker.getTypeOfSymbolAtLocation(
+    symbol,
+    symbol.valueDeclaration!,
   );
-  const name = nodeType.symbol.getName();
+
+  const type = checker.typeToString(constructorType);
+  const name = symbol.getName();
 
   return {
-    name: nodeType.symbol.getName(),
+    defType,
+    unwrapType,
+    name,
     type,
     isZodType: name.includes('Zod'),
     isZodPrimative: [
@@ -42,7 +74,7 @@ const getType = <T extends TSESTree.Node>(
       'ZodNumber',
       'ZodBoolean',
       'ZodRecord',
-    ].includes(name),
+    ].includes(unwrapType ?? name),
   };
 };
 

@@ -22,5 +22,9 @@ ruleTester.run(ruleName, rule, {
     { ...test('number-no-example'), errors: [{ messageId: 'required' }] },
     { ...test('boolean-no-example'), errors: [{ messageId: 'required' }] },
     { ...test('record-no-example'), errors: [{ messageId: 'required' }] },
+    {
+      ...test('string-optional-no-example'),
+      errors: [{ messageId: 'required' }],
+    },
   ],
 });
