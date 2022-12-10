@@ -6,7 +6,7 @@
 
 ## Intoduction
 
-This is a set of Eslint rules created for use with [@asteasolutions/zod-to-openapi]. As a contributor and major user of the library, there are some learnings and difficulties with using the library by itself and this repository hopes to address those issues.
+This is a set of Eslint rules created for use with [@asteasolutions/zod-to-openapi]. As a contributor and major user of the library, there are some learnings with using the library by itself and this package hopes to address those issues as well as optimise the overall developer experience with a sprinkle of magic ✨.
 
 ## Table of Contents
 
