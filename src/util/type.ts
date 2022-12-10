@@ -24,7 +24,7 @@ const getType = <T extends TSESTree.Node>(
   context: Readonly<TSESLint.RuleContext<any, any>>,
 ):
   | {
-      defType: string;
+      defType: string | undefined;
       unwrapType: string | undefined;
       name: string;
       type: string;
@@ -41,9 +41,6 @@ const getType = <T extends TSESTree.Node>(
   const nodeType = checker.getTypeAtLocation(originalNode);
 
   const defType = getPropType(checker, nodeType, '_def');
-  if (!defType) {
-    return;
-  }
 
   const maybeUnwrapType = getPropType(checker, nodeType, 'unwrap');
   const unwrapType = maybeUnwrapType?.startsWith('() => ')
