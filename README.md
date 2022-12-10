@@ -129,7 +129,9 @@ export const ZodObject = registry.register(
 
 ### require-comment 🔧
 
-Requires that all Zod schemas which have an `.openapi()` object have a `description` and matching comment. In order for your IDE to display descriptions in inferred types, it requires JsDoc comments. This rule can generate comments based on your `description` and `deprecated` fields and adds it to your variable declaration. This rule is autofixable.
+This rule was rhe inspiration for the entire package. It requires that all Zod schemas which have an `.openapi()` object have a `description` and matching jsDoc comment.
+
+In order for your IDE to display descriptions in inferred types, it requires JsDoc comments. This rule autogenerates comments based on your `description` and `deprecated` fields and adds it to your ZodSchema. These appear in both the inferred and actual ZodSchema. This rule is autofixable.
 
 A simple example
 
