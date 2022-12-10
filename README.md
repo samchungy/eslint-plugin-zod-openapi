@@ -26,13 +26,12 @@ The description field is not surfaced via IDE type inference
 Solution: [require-comment](#require-comment-🔧)
 
 ```ts
-const a = z.string().uuid().openapi({ description: 'hello world' }); // ℹ️ hello world is not in the IDE type
-const b = z.string().openapi().uuid();
+const a = z.string().openapi({ description: 'hello world' }); // ℹ️ hello world is not in the IDE type
 ```
 
 ### Problem #3
 
-`.openapi()` can be used everywhere, this makes it inconsistent and difficult to keep consistent.
+`.openapi()` can be used everywhere, this makes it's usage inconsistent.
 
 Solution: [prefer-openapi-last](#prefer-openapi-last)
 
