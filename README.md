@@ -15,8 +15,8 @@ It is easy to forget to add `.openapi()` to your Zod types.
 Solution: [require-openapi](#require-openapi)
 
 ```ts
-const a = z.string().uuid().openapi({ description: 'hello world' });
-const b = z.string().openapi().uuid();
+const a = z.string();
+const b = z.string().uuid().openapi({ description: 'hello world' });
 ```
 
 ### Problem #2
