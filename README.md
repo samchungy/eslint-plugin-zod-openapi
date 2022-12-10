@@ -8,41 +8,23 @@
 
 This is a set of Eslint rules created for use with [@asteasolutions/zod-to-openapi]. As a contributor and major user of the library, there are some learnings and difficulties with using the library by itself and this repository hopes to address those issues.
 
-### Problem #1
+## Table of Contents
 
-It is easy to forget to add `.openapi()` to your Zod types.
-
-Solution: [require-openapi](#require-openapi)
-
-```ts
-const a = z.string();
-const b = z.string().uuid().openapi({ description: 'hello world' });
-```
-
-### Problem #2
-
-The description field is not surfaced via IDE type inference
-
-Solution: [require-comment](#require-comment-🔧)
-
-```ts
-const a = z.string().openapi({ description: 'hello world' }); // ℹ️ hello world is not in the IDE type
-```
-
-### Problem #3
-
-`.openapi()` can be used everywhere, this makes it's usage inconsistent.
-
-Solution: [prefer-openapi-last](#prefer-openapi-last)
-
-eg.
-
-```ts
-const a = z.string().uuid().openapi();
-const b = z.string().openapi().uuid();
-```
-
-###
+- [Installation](#installation)
+- [Rules](#rules)
+  - [require-openapi](#require-openapi)
+  - [require-comment 🔧](#require-comment-)
+  - [require-example](#require-example)
+  - [prefer-openapi-last](#prefer-openapi-last)
+  - [prefer-zod-default](#prefer-zod-default)
+- [Development](#development)
+  - [Test](#test)
+  - [Lint](#lint)
+  - [Package](#package)
+- [Release](#release)
+  - [Commit messages](#commit-messages)
+  - [Releasing latest](#releasing-latest)
+  - [Releasing other dist-tags](#releasing-other-dist-tags)
 
 ## Installation
 
@@ -96,7 +78,7 @@ Requires that all Zod schemas have an `.openapi()` method. In order for your gen
 A simple example
 
 ```ts
-const NameSchema = z.string().uuid(); // ❌ error
+const NameSchema = z.string(); // ❌ error
 const NameSchema = z.string().openapi({ description: "A user's name" }); // ✅ correct
 ```
 
@@ -193,6 +175,23 @@ const PersonSchema = z
       .openapi({ description: "A user's age", example: 12 }),
   })
   .openapi({ description: 'Person' });
+```
+
+### require-example
+
+Requires that the `.openapi()` method contains an `example` key for Zod primatives. This makes our generated documentation much nicer. This includes:
+
+- ZodBoolean
+- ZodNumber
+- ZodString
+- ZodRecord
+
+```ts
+const UserIdSchema = z.string().uuid(); // ❌ error (no example)
+const UserIdSchema = z
+  .string()
+  .uuid()
+  .openapi({ example: '48948579-f117-47e4-bc05-12f28e7fdccd' }); // ✅ correct
 ```
 
 ### prefer-openapi-last

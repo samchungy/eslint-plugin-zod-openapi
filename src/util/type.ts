@@ -40,17 +40,17 @@ const getType = <T extends TSESTree.Node>(
   const originalNode = parserServices.esTreeNodeToTSNodeMap.get(node);
   const nodeType = checker.getTypeAtLocation(originalNode);
 
+  const symbol = nodeType.getSymbol();
+  if (!symbol) {
+    return;
+  }
+
   const defType = getPropType(checker, nodeType, '_def');
 
   const maybeUnwrapType = getPropType(checker, nodeType, 'unwrap');
   const unwrapType = maybeUnwrapType?.startsWith('() => ')
     ? maybeUnwrapType.slice(6)
     : undefined;
-
-  const symbol = nodeType.getSymbol();
-  if (!symbol) {
-    return;
-  }
 
   const constructorType = checker.getTypeOfSymbolAtLocation(
     symbol,
@@ -96,24 +96,25 @@ const getInferredComment = <T extends TSESTree.Node>(
   const originalNode = parserServices.esTreeNodeToTSNodeMap.get(baseIdentifier);
   const symbol = checker.getSymbolAtLocation(originalNode);
 
-  if (symbol) {
-    const aliasedSymbol =
-      symbol.flags === ts.SymbolFlags.AliasExcludes
-        ? checker.getAliasedSymbol(symbol)
-        : symbol;
-    const comment = ts.displayPartsToString(
-      aliasedSymbol.getDocumentationComment(checker),
-    );
-    if (!comment) {
-      const jsDoc = aliasedSymbol.getJsDocTags(checker);
-      const tags = jsDoc.map(
-        (doc) => `@${doc.name} ${doc?.text?.[0].text ?? ''}`,
-      );
-      return tags.join(' ');
-    }
-    return comment;
+  if (!symbol) {
+    return;
   }
-  return;
+
+  const aliasedSymbol =
+    symbol.flags === ts.SymbolFlags.AliasExcludes
+      ? checker.getAliasedSymbol(symbol)
+      : symbol;
+  const comment = ts.displayPartsToString(
+    aliasedSymbol.getDocumentationComment(checker),
+  );
+  if (!comment) {
+    const jsDoc = aliasedSymbol.getJsDocTags(checker);
+    const tags = jsDoc.map(
+      (doc) => `@${doc.name} ${doc?.text?.[0].text ?? ''}`,
+    );
+    return tags.join(' ');
+  }
+  return comment;
 };
 
 export { getType, getInferredComment };
