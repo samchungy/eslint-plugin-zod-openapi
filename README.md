@@ -8,7 +8,7 @@ Eslint rules for [@asteasolutions/zod-to-openapi]
 
 ## Intoduction
 
-This is a set of Eslint rules created for use with [@asteasolutions/zod-to-openapi]. However there are some big issues with using the library just by itself.
+This is a set of Eslint rules created for use with [@asteasolutions/zod-to-openapi]. As a contributor and major user of the library, there are some learnings and difficulties with using the library by itself and this repository hopes to address those issues.
 
 ### Problem #1
 
