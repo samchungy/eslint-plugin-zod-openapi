@@ -1,49 +1,227 @@
 # eslint-plugin-zod-to-openapi
 
+[![npm version](https://img.shields.io/npm/v/eslint-plugin-zod-to-openapi)](https://www.npmjs.com/package/eslint-plugin-zod-to-openapi)
+[![npm downloads](https://img.shields.io/npm/dm/eslint-plugin-zod-to-openapi)](https://www.npmjs.com/package/eslint-plugin-zod-to-openapi)
 [![Powered by skuba](https://img.shields.io/badge/🤿%20skuba-powered-009DC4)](https://github.com/seek-oss/skuba)
 
-This package is intended to be public on [seek-oss].
-To create an internal package,
-run `skuba init` and select the `private-npm-package` template.
+Eslint rules for [@asteasolutions/zod-to-openapi]
 
-Next steps:
+## Intoduction
 
-1. [ ] Read [SEEK's Open Source RFC].
-2. [ ] Create a new repository in the [seek-oss] GitHub organisation.
-3. [ ] Push local commits to the upstream GitHub branch.
-4. [ ] Configure [GitHub repository settings].
-5. [ ] Keep dependencies up to date with [Renovate];
-       request installation in [#open-source].
-6. [ ] Delete this checklist 😌.
+This is a set of Eslint rules created for use with [@asteasolutions/zod-to-openapi]. However there are some big issues with using the library just by itself.
 
-[#open-source]: https://slack.com/app_redirect?channel=C39P1H2SU
-[github repository settings]: https://github.com/samchungy/eslint-plugin-zod-to-openapi/settings
-[renovate]: https://github.com/apps/renovate
-[seek's open source rfc]: https://rfc.skinfra.xyz/RFC016-Open-Source.html
+### Problem #1
 
-## API
+It is easy to forget to add `.openapi()` to your Zod types.
 
-### `log`
+Solution: [require-openapi](#require-openapi)
 
-Writes the module name to stdout.
-Thrilling stuff.
+```ts
+const a = z.string().uuid().openapi({ description: 'hello world' }); // ℹ️ hello world is not in the IDE type
+const b = z.string().openapi().uuid();
+```
 
-```typescript
-import { log } from 'eslint-plugin-zod-to-openapi';
+### Problem #2
 
-log();
+The description field is not surfaced via IDE type inference
+
+Solution: [require-comment](#require-comment-🔧)
+
+```ts
+const a = z.string().uuid().openapi({ description: 'hello world' }); // ℹ️ hello world is not in the IDE type
+const b = z.string().openapi().uuid();
+```
+
+### Problem #3
+
+`.openapi()` can be used everywhere, this makes it inconsistent and difficult to keep consistent.
+
+Solution: [prefer-openapi-last](#prefer-openapi-last)
+
+eg.
+
+```ts
+const a = z.string().uuid().openapi();
+const b = z.string().openapi().uuid();
+```
+
+###
+
+## Installation
+
+To install simply run on yarn or npm
+
+```bash
+yarn add -D eslint-plugin-zod-to-openapi
+# or
+npm i -D eslint-plugin-zod-to-openapi
+```
+
+Add the following configuration to your `.eslintrc` file
+
+```js
+{
+  "plugins": ["zod-to-openapi"]
+}
+```
+
+```js
+{
+  "rules": {
+    "zod-to-openapi/require-openapi": "error"
+    "zod-to-openapi/require-comment": "error",
+    "zod-to-openapi/prefer-zod-default": "warn",
+  }
+}
+```
+
+You may wish to use overrides as this plugin by default will assume that all Zod Objects are using zod-to-openapi.
+
+```js
+"overrides": [
+    {
+      "files": ["src/api-types/*.ts"],
+      "rules": {
+        "zod-to-openapi/require-openapi": "error"
+      }
+    }
+  ]
+```
+
+## Rules
+
+🔧 = autofixable
+
+### require-openapi
+
+Requires that all Zod schemas have an `.openapi()` method. In order for your generated documentation to appear nice, you need to provide metadata for your types.
+
+A simple example
+
+```ts
+const NameSchema = z.string().uuid(); // ❌ error
+const NameSchema = z.string().openapi({ description: "A user's name" }); // ✅ correct
+```
+
+This rule is best used in conjunction with the require-comment rule. To avoid costly traversal we use the Typescript compiler to check the type and also consider any referenced variable which has a jsDoc comment as having an `.openapi()` field.
+
+A complex example
+
+```ts
+/**
+ * A user's name
+ **/
+const NameSchema = z.string().openapi({ description: "A user's name" });
+
+const NameSchema2 = z.string().openapi({ description: "A user's name" });
+
+const ObjectSchema = z.object({
+  /**
+   * A user's name
+   **/
+  name: z.string().openapi({ description: "A user's name" });
+})
+
+const PersonSchema = z
+  .object({
+    /**
+     * A user's name
+     **/
+    name: NameSchema, // ✅ correct
+    name2: NameSchema2, // ❌ error (no comment)
+    /**
+     * A user's name
+     **/
+    name3: ObjectSchema.shape.name, // ✅ correct
+  })
+  .openapi({ description: 'Person' });
+```
+
+This rule also requires that all Zod Schemas in the `OpenAPIRegistry.register` method require an `.openapi()` method.
+
+```ts
+const registry = new OpenAPIRegistry();
+
+export const ZodObject = registry.register(
+  'registered',
+  z.string().openapi({ description: 'hello' }), // ✅ correct
+);
+```
+
+### require-comment 🔧
+
+Requires that all Zod schemas which have an `.openapi()` object have a `description` and matching comment. In order for your IDE to display descriptions in inferred types, it requires JsDoc comments. This rule can generate comments based on your `description` and `deprecated` fields and adds it to your variable declaration. This rule is autofixable.
+
+A simple example
+
+```ts
+const NameSchema = z.string().openapi({ example: 'Fred' }); // ❌ error (no description or comment)
+
+/**
+ * A user's name
+ **/
+const NameSchema = z
+  .string()
+  .openapi({ description: "A user's name", example: 'Fred' }); // ✅ correct
+```
+
+This rule is also able to infer JsDoc comments from other variables and automatically copies the comments across where otherwise you would gain no type comments.
+
+A more complex example:
+
+```ts
+/**
+ * @deprecated A user's name
+ **/
+const NameSchema = z
+  .string()
+  .openapi({ description: "A user's name", example: 'Fred', deprecated: true }); // ✅ correct
+
+/**
+ * Person
+ **/
+const PersonSchema = z
+  .object({
+    /**
+     * @deprecated A user's name  // ℹ️ this comment is copied across from NameSchema
+     **/
+    name: N̶a̶m̶e̶S̶c̶h̶e̶m̶a̶, // ℹ️ Any type referencing PersonSchema.name will be also marked as deprecated
+    /**
+     * A user's age
+     **/
+    age: z
+      .number()
+      .positive()
+      .int()
+      .openapi({ description: "A user's age", example: 12 }),
+  })
+  .openapi({ description: 'Person' });
+```
+
+### prefer-openapi-last
+
+Prefers that the `.openapi()` method be the last call in a Zod Schema chain. This is done mainly out of consistency but also because there are some methods that can override the `.openapi()` method. eg. pick, omit
+
+A simple example
+
+```ts
+const NameSchema = z.string().openapi({ example: 'Fred' }).length(5); // ❌ error
+
+const NameSchema = z.string().length(5).openapi({ example: 'Fred' }); // ✅ correct
+```
+
+### prefer-zod-default
+
+Provides an error when the `.openapi() default` option is provided. ZodDefault should be used instead.
+
+A simple example
+
+```ts
+const NameSchema = z.string().openapi({ example: 'Fred', default: 'Fred' }); // ❌ error
+const NameSchema = z.string().default('Fred').openapi({ example: 'Fred' }); // ✅ correct
 ```
 
 ## Development
-
-### Prerequisites
-
-- Node.js LTS
-- Yarn 1.x
-
-```shell
-yarn install
-```
 
 ### Test
 
@@ -121,8 +299,7 @@ Here are some branches that **semantic-release** supports by default:
 For more information, see the **semantic-release** docs on [triggering a release].
 
 [distribution tags]: https://docs.npmjs.com/adding-dist-tags-to-packages
-[oss npm package guidance]: https://github.com/SEEK-Jobs/seek-oss-ci/blob/master/NPM_PACKAGES.md#access-to-publish-to-npm
 [release workflow]: .github/workflows/release.yml
-[seek-oss]: https://github.com/seek-oss
 [semantic-release]: https://github.com/semantic-release/semantic-release
 [triggering a release]: https://github.com/semantic-release/semantic-release/#triggering-a-release
+[@asteasolutions/zod-to-openapi]: https://github.com/asteasolutions/zod-to-openapi
