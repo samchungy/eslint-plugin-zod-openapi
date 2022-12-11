@@ -88,8 +88,7 @@ export const rule = createRule({
   },
   name: 'require-openapi-last',
   meta: {
-    fixable: 'code',
-    type: 'problem',
+    type: 'suggestion',
     messages: {
       requires: '.openapi() should be declared at the end of a zod chain',
     },

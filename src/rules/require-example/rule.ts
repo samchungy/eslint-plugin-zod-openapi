@@ -92,8 +92,7 @@ export const rule = createRule({
   },
   name: 'require-example',
   meta: {
-    fixable: 'code',
-    type: 'problem',
+    type: 'suggestion',
     messages: {
       required: '.openapi() example is required for Zod primatives',
     },

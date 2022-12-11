@@ -260,7 +260,7 @@ export const rule = createRule({
   name: 'require-comment',
   meta: {
     fixable: 'code',
-    type: 'problem',
+    type: 'suggestion',
     messages: {
       required: '.openapi() description is required on Zod Schema',
       comment: '.openapi() description and deprecated must match comment',

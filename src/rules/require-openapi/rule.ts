@@ -97,8 +97,7 @@ export const rule = createRule({
   },
   name: 'require-openapi',
   meta: {
-    fixable: 'code',
-    type: 'problem',
+    type: 'suggestion',
     messages: {
       'open-api-required': '.openapi() is required on Zod Schema',
     },

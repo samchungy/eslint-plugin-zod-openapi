@@ -85,8 +85,7 @@ export const rule = createRule({
   },
   name: 'prefer-zod-default',
   meta: {
-    fixable: 'code',
-    type: 'problem',
+    type: 'suggestion',
     messages: {
       prefer: 'use .default() instead of .openapi() default',
     },
