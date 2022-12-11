@@ -169,7 +169,7 @@ const NameSchema = z
 const PersonSchema = z
   .object({
     /**
-     * @deprecated A user's name  // ℹ️ this comment is copied across from NameSchema
+     * @deprecated A user's name  // ℹ️ this comment is synced with NameSchema
      **/
     name: NameSchema, // ℹ️ This type will be marked as deprecated in your IDE
     /**
@@ -182,6 +182,11 @@ const PersonSchema = z
       .openapi({ description: "A user's age", example: 12 }),
   })
   .openapi({ description: 'Person' });
+
+/**
+ * Person
+ **/
+type Person = z.infer<typeof PersonSchema>; // ℹ️ This comment is synced with PersonSchema. This does not work for indexed access eg. z.infer<typeof PersonSchema>['name'].
 ```
 
 ### require-example
