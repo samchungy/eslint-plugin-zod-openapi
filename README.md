@@ -92,14 +92,19 @@ A complex example
  **/
 const NameSchema = z.string().openapi({ description: "A user's name" });
 
-const NameSchema2 = z.string().openapi({ description: "A user's name" });
+const IdSchema = z.string().uuid();
 
-const ObjectSchema = z.object({
-  /**
-   * A user's name
-   **/
-  name: z.string().openapi({ description: "A user's name" });
-})
+/**
+ * Other Schema
+ **/
+const OtherSchema = z
+  .object({
+    /**
+     * A user's age
+     **/
+    age: z.number().openapi({ description: "A user's age" }),
+  })
+  .openapi({ description: 'Other Schema' });
 
 const PersonSchema = z
   .object({
@@ -107,11 +112,11 @@ const PersonSchema = z
      * A user's name
      **/
     name: NameSchema, // ✅ correct
-    name2: NameSchema2, // ❌ error (no comment)
+    id: IdSchema, // ❌ error (IdSchema has no comment)
     /**
      * A user's name
      **/
-    name3: ObjectSchema.shape.name, // ✅ correct
+    age: OtherSchema.shape.age, // ✅ correct
   })
   .openapi({ description: 'Person' });
 ```
