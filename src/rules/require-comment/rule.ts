@@ -255,6 +255,82 @@ export const rule = createRule({
           });
         }
       },
+      TSTypeReference(node) {
+        // only check z.infer, z.input, z.output
+        if (
+          node.typeName.type !== 'TSQualifiedName' ||
+          node.typeName.left.type !== 'Identifier' ||
+          node.typeName.left.name !== 'z' ||
+          node.typeName.right.type !== 'Identifier' ||
+          (node.typeName.right.name !== 'infer' &&
+            node.typeName.right.name !== 'input' &&
+            node.typeName.right.name !== 'output')
+        ) {
+          return;
+        }
+
+        if (node.typeParameters?.type !== 'TSTypeParameterInstantiation') {
+          return;
+        }
+
+        const param = node.typeParameters.params[0];
+
+        if (
+          param?.type !== 'TSTypeQuery' ||
+          param.exprName.type !== 'Identifier'
+        ) {
+          return;
+        }
+
+        const declaration = node.parent;
+
+        if (declaration?.type !== 'TSTypeAliasDeclaration') {
+          return;
+        }
+
+        const expectedCommentValue = getInferredComment(
+          param.exprName,
+          context,
+        );
+
+        if (!expectedCommentValue) {
+          return;
+        }
+
+        const commentNode = getCommentNode(declaration);
+        const comment = getComment(commentNode, context);
+
+        if (!comment) {
+          return context.report({
+            messageId: 'comment',
+            node: declaration.id,
+            fix: (fixer) =>
+              fixer.insertTextBefore(
+                commentNode,
+                createFormattedComment(expectedCommentValue, commentNode.loc),
+              ),
+          });
+        }
+
+        const commentValue = commentRegex.exec(comment.value)?.[1];
+
+        if (!commentValue || expectedCommentValue !== commentValue) {
+          return context.report({
+            messageId: 'comment',
+            node: comment,
+            fix: (fixer) => [
+              fixer.removeRange([
+                comment.range[0] - (comment.loc.start.column + 1), // indent
+                comment.range[1],
+              ]),
+              fixer.insertTextBefore(
+                commentNode,
+                createFormattedComment(expectedCommentValue, commentNode.loc),
+              ),
+            ],
+          });
+        }
+      },
     };
   },
   name: 'require-comment',

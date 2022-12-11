@@ -102,5 +102,9 @@ ruleTester.run(ruleName, rule, {
       ...test('string-referenced-deprecated', true),
       errors: [{ messageId: 'comment' }],
     },
+    {
+      ...test('zod-infer', true),
+      errors: [{ messageId: 'comment' }],
+    },
   ],
 });
