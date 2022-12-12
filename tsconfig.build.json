@@ -3,7 +3,8 @@
     "**/__mocks__/**/*",
     "**/*.test.ts",
     "src/testing/**/*",
-    "src/rules/**/tests/**/*"
+    "src/rules/**/tests/**/*",
+    "src/tests"
   ],
   "extends": "./tsconfig.json",
   "include": ["src/**/*"]
