@@ -3,14 +3,18 @@ import { ESLintUtils, TSESLint, TSESTree } from '@typescript-eslint/utils';
 import { findOpenApiCallExpression } from '../../util/traverse';
 import { getType } from '../../util/type';
 
+type Key = 'example' | 'examples';
+
 const getExample = (
   properties: TSESTree.ObjectLiteralElement[],
+  key?: string,
 ): TSESTree.Property | undefined => {
   for (const property of properties) {
     if (
       property.type === 'Property' &&
       property.key.type === 'Identifier' &&
-      property.key.name === 'example'
+      ((key === 'examples' && property.key.name === 'examples') ||
+        ((!key || key === 'example') && property.key.name === 'example'))
     ) {
       return property;
     }
@@ -20,7 +24,7 @@ const getExample = (
 
 const testExample = (
   node: TSESTree.Node,
-  context: Readonly<TSESLint.RuleContext<any, any>>,
+  context: Readonly<TSESLint.RuleContext<'required', [Key]>>,
   openApiCallExpression: TSESTree.CallExpression,
 ) => {
   const argument = openApiCallExpression?.arguments[0];
@@ -28,7 +32,7 @@ const testExample = (
     return;
   }
 
-  const example = getExample(argument.properties);
+  const example = getExample(argument.properties, context.options[0]);
 
   if (!example) {
     return context.report({
@@ -48,7 +52,7 @@ const createRule = ESLintUtils.RuleCreator(
   (name) => `https://example.com/rule/${name}`,
 );
 
-export const rule = createRule({
+export const rule = createRule<[Key], 'required'>({
   create(context) {
     return {
       VariableDeclaration(node) {
@@ -96,11 +100,15 @@ export const rule = createRule({
     messages: {
       required: '.openapi() example is required for Zod primatives',
     },
-    schema: [],
+    schema: [
+      {
+        enum: ['example', 'examples'],
+      },
+    ],
     docs: {
       description: 'Requires that all zod primatives have an example',
       recommended: 'error',
     },
   },
-  defaultOptions: [],
+  defaultOptions: ['example'],
 });

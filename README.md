@@ -191,12 +191,13 @@ type Person = z.infer<typeof PersonSchema>; // ℹ️ This comment is synced wit
 
 ### require-example
 
-Requires that the `.openapi()` method contains an `example` key for Zod primatives. This makes our generated documentation much nicer. This includes:
+Requires that the `.openapi()` method contains an `example`, `examples` key for Zod primatives. This makes our generated documentation much nicer. This includes:
 
 - ZodBoolean
 - ZodNumber
 - ZodString
 - ZodRecord
+- ZodEnum
 
 ```ts
 const UserIdSchema = z.string().uuid(); // ❌ error (no example)
@@ -205,6 +206,10 @@ const UserIdSchema = z
   .uuid()
   .openapi({ example: '48948579-f117-47e4-bc05-12f28e7fdccd' }); // ✅ correct
 ```
+
+By default this rule looks for the `example` key. If you wish to use the `examples` key which is required in Open API 3.1 pass the key `examples` in the options argument of your rule configuration.
+
+eg. `'zod-to-openapi/require-example': ['error', 'examples']`
 
 ### prefer-openapi-last
 

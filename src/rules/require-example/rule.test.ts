@@ -16,7 +16,15 @@ const ruleTester = new ESLintUtils.RuleTester({
 });
 
 ruleTester.run(ruleName, rule, {
-  valid: [],
+  valid: [
+    {
+      ...test('string-example'),
+    },
+    {
+      ...test('string-examples'),
+      options: ['examples'],
+    },
+  ],
   invalid: [
     { ...test('string-no-example'), errors: [{ messageId: 'required' }] },
     { ...test('number-no-example'), errors: [{ messageId: 'required' }] },
@@ -26,6 +34,11 @@ ruleTester.run(ruleName, rule, {
     {
       ...test('string-optional-no-example'),
       errors: [{ messageId: 'required' }],
+    },
+    {
+      ...test('string-no-example'),
+      errors: [{ messageId: 'required' }],
+      options: ['examples'],
     },
   ],
 });
