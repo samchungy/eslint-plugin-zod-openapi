@@ -3,9 +3,21 @@ import { ESLintUtils, TSESLint, TSESTree } from '@typescript-eslint/utils';
 import { findOpenApiCallExpression } from '../../util/traverse';
 import { getInferredComment, getType } from '../../util/type';
 
-const commentRegex = /\*\n\s+\* (.*)\n/;
+const commentRegex = /[\*\n\s]+(.*)[\*\s]+(.*)/;
 
-const deprecatedTag = '@deprecated';
+const DEPRECATED_TAG = '@deprecated';
+const EXAMPLE_TAG = '@example';
+
+const getCommentValue = (comment: string): string | undefined => {
+  const match = commentRegex.exec(comment);
+
+  const commentValue = match?.[1];
+  const exampleValue = match?.[2];
+
+  return commentValue
+    ? `${commentValue}${exampleValue ? `\n${exampleValue}` : ''}`
+    : undefined;
+};
 
 export const getCommentNode = (node: TSESTree.Node): TSESTree.Node => {
   if (node.parent?.type === 'ExportNamedDeclaration') {
@@ -23,17 +35,27 @@ export const getComment = (
   return comment?.type === 'Block' ? comment : undefined;
 };
 
-const createCommentValue = (contents: string, deprecated: boolean) =>
-  `${deprecated ? `${deprecatedTag} ` : ''}${contents}`;
+const createCommentValue = (
+  contents: string,
+  deprecated: boolean,
+  example?: string,
+) => {
+  const deprecatedValue = deprecated ? `${DEPRECATED_TAG} ` : '';
+  const exampleValue = example ? `\n${EXAMPLE_TAG} ${example}` : '';
+  return `${deprecatedValue}${contents}${exampleValue}`;
+};
 
 const createFormattedComment = (
   contents: string,
   loc: TSESTree.SourceLocation,
   newline?: boolean,
 ) => {
+  const lines = contents.split('\n');
+
   const indent = ' '.repeat(loc.start.column);
+
   return `${newline ? `\n${indent}` : ''}/**
-${indent} * ${contents}
+${lines.map((line) => `${indent} * ${line}`).join('\n')}
 ${indent} */
 ${indent}`;
 };
@@ -67,27 +89,63 @@ export const isNewLineRequired = (node: TSESTree.Property) => {
   return false;
 };
 
-interface PropertyNode {
-  property: TSESTree.Property;
-  value: TSESTree.Literal['value'];
-}
-
 const getPropertyNode = (
   properties: TSESTree.ObjectLiteralElement[],
   key: string,
-): PropertyNode | undefined => {
+):
+  | TSESTree.PropertyComputedName
+  | TSESTree.PropertyNonComputedName
+  | undefined => {
   for (const property of properties) {
     if (
       property.type === 'Property' &&
       property.key.type === 'Identifier' &&
-      property.key.name === key &&
-      property.value.type === 'Literal'
+      property.key.name === key
     ) {
-      return {
-        property,
-        value: property.value.value,
-      };
+      return property;
     }
+  }
+  return undefined;
+};
+
+const getExampleValue = (
+  properties: TSESTree.ObjectLiteralElement[],
+  context: Readonly<TSESLint.RuleContext<any, any>>,
+): string | undefined => {
+  const examples = getPropertyNode(properties, 'examples');
+  const example = getPropertyNode(properties, 'example');
+
+  if (examples) {
+    if (examples.value.type !== 'ArrayExpression') {
+      // This should always be an array if not ts compiler will complain
+      return;
+    }
+    // Because grabbing a value is difficult if it is not a literal
+    const arrayText = context.getSourceCode().getText(examples.value);
+    // Remove square brackets
+    return arrayText.slice(1, -1);
+  }
+
+  if (example) {
+    const text = context.getSourceCode().getText(example.value);
+    return text;
+  }
+
+  return undefined;
+};
+
+const getLiteralValue = (
+  property:
+    | TSESTree.PropertyComputedName
+    | TSESTree.PropertyNonComputedName
+    | undefined,
+): TSESTree.Literal['value'] | undefined => {
+  if (!property) {
+    return undefined;
+  }
+
+  if (property.value.type === 'Literal') {
+    return property.value.value;
   }
   return undefined;
 };
@@ -106,16 +164,19 @@ const getExpectedCommentValue = (
     return;
   }
 
-  const description = getPropertyNode(argument.properties, 'description');
+  const descriptionProperty = getPropertyNode(
+    argument.properties,
+    'description',
+  );
 
-  if (!description) {
+  if (!descriptionProperty) {
     return context.report({
       messageId: 'required',
       node: openApiCallExpression,
     });
   }
 
-  const descriptionValue = description.value;
+  const descriptionValue = getLiteralValue(descriptionProperty);
 
   if (typeof descriptionValue !== 'string') {
     // would be handled by ts
@@ -125,15 +186,16 @@ const getExpectedCommentValue = (
   if (!descriptionValue.length) {
     return context.report({
       messageId: 'required',
-      node: description.property,
+      node: descriptionProperty,
     });
   }
 
-  const deprecated = getPropertyNode(argument.properties, 'deprecated');
+  const deprecatedNode = getPropertyNode(argument.properties, 'deprecated');
+  const deprecatedValue = Boolean(getLiteralValue(deprecatedNode));
 
-  const deprecatedValue = Boolean(deprecated?.value);
+  const exampleValue = getExampleValue(argument.properties, context);
 
-  return createCommentValue(descriptionValue, deprecatedValue);
+  return createCommentValue(descriptionValue, deprecatedValue, exampleValue);
 };
 
 // eslint-disable-next-line new-cap
@@ -181,7 +243,7 @@ export const rule = createRule({
           });
         }
 
-        const commentValue = commentRegex.exec(comment.value)?.[1];
+        const commentValue = getCommentValue(comment.value);
 
         if (!commentValue || expectedCommentValue !== commentValue) {
           return context.report({
@@ -312,7 +374,7 @@ export const rule = createRule({
           });
         }
 
-        const commentValue = commentRegex.exec(comment.value)?.[1];
+        const commentValue = getCommentValue(comment.value);
 
         if (!commentValue || expectedCommentValue !== commentValue) {
           return context.report({

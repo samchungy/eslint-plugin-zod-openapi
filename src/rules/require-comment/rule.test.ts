@@ -22,6 +22,8 @@ ruleTester.run(ruleName, rule, {
     test('string-deprecated'),
     test('object-property-deprecated'),
     test('string-inline-comment'),
+    test('number-example-integer'),
+    test('string-list-example'),
   ],
   invalid: [
     {
@@ -104,6 +106,10 @@ ruleTester.run(ruleName, rule, {
     },
     {
       ...test('zod-infer', true),
+      errors: [{ messageId: 'comment' }],
+    },
+    {
+      ...test('string-example-wrong', true),
       errors: [{ messageId: 'comment' }],
     },
   ],
