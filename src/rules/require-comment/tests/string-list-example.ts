@@ -5,7 +5,6 @@ extendZodWithOpenApi(z);
 
 /**
  * a list of strings
- * @example ['hello']
  */
 export const ZodStringList = z
   .array(z.string())

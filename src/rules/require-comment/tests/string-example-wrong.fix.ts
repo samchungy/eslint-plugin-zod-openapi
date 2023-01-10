@@ -5,7 +5,7 @@ extendZodWithOpenApi(z);
 
 /**
  * correct
- * @example 'hello world'
+ * @example "hello world"
  */
 export const ZodString = z
   .string()

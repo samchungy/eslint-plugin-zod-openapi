@@ -38,10 +38,12 @@ export const getComment = (
 const createCommentValue = (
   contents: string,
   deprecated: boolean,
-  example?: string,
+  example?: TSESTree.Literal['value'],
 ) => {
   const deprecatedValue = deprecated ? `${DEPRECATED_TAG} ` : '';
-  const exampleValue = example ? `\n${EXAMPLE_TAG} ${example}` : '';
+  const exampleValue = example
+    ? `\n${EXAMPLE_TAG} ${JSON.stringify(example)}`
+    : '';
   return `${deprecatedValue}${contents}${exampleValue}`;
 };
 
@@ -110,8 +112,7 @@ const getPropertyNode = (
 
 const getExampleValue = (
   properties: TSESTree.ObjectLiteralElement[],
-  context: Readonly<TSESLint.RuleContext<any, any>>,
-): string | undefined => {
+): TSESTree.Literal['value'] | undefined => {
   const examples = getPropertyNode(properties, 'examples');
   const example = getPropertyNode(properties, 'example');
 
@@ -120,15 +121,23 @@ const getExampleValue = (
       // This should always be an array if not ts compiler will complain
       return;
     }
+
+    const element = examples.value.elements?.[0];
+
+    if (!element || element.type !== 'Literal') {
+      return;
+    }
+
     // Because grabbing a value is difficult if it is not a literal
-    const arrayText = context.getSourceCode().getText(examples.value);
-    // Remove square brackets
-    return arrayText.slice(1, -1);
+    return element.value;
   }
 
   if (example) {
-    const text = context.getSourceCode().getText(example.value);
-    return text;
+    if (example.value.type !== 'Literal') {
+      return;
+    }
+
+    return example.value.value;
   }
 
   return undefined;
@@ -193,7 +202,7 @@ const getExpectedCommentValue = (
   const deprecatedNode = getPropertyNode(argument.properties, 'deprecated');
   const deprecatedValue = Boolean(getLiteralValue(deprecatedNode));
 
-  const exampleValue = getExampleValue(argument.properties, context);
+  const exampleValue = getExampleValue(argument.properties);
 
   return createCommentValue(descriptionValue, deprecatedValue, exampleValue);
 };
@@ -294,7 +303,7 @@ export const rule = createRule({
           });
         }
 
-        const commentValue = commentRegex.exec(comment.value)?.[1];
+        const commentValue = getCommentValue(comment.value);
 
         if (!commentValue || expectedCommentValue !== commentValue) {
           return context.report({

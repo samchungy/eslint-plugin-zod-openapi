@@ -24,6 +24,8 @@ ruleTester.run(ruleName, rule, {
     test('string-inline-comment'),
     test('number-example-integer'),
     test('string-list-example'),
+    test('object-property-example'),
+    test('string-examples'),
   ],
   invalid: [
     {
