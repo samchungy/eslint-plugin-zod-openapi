@@ -26,6 +26,7 @@ ruleTester.run(ruleName, rule, {
     test('string-list-example'),
     test('object-property-example'),
     test('string-examples'),
+    test('object-property-referenced-example'),
   ],
   invalid: [
     {
