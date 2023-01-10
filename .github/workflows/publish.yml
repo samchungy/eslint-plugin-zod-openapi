@@ -51,7 +51,7 @@ jobs:
             echo "Not pushing to master because the tag we're operating on is behind"
           fi
 
-      - run: npm publish --access=public
+      - run: npm publish
         env:
           NPM_TOKEN: ${{secrets.NPM_TOKEN}}
 
