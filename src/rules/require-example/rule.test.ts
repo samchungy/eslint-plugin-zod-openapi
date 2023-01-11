@@ -26,18 +26,35 @@ ruleTester.run(ruleName, rule, {
     },
   ],
   invalid: [
-    { ...test('string-no-example'), errors: [{ messageId: 'required' }] },
-    { ...test('number-no-example'), errors: [{ messageId: 'required' }] },
-    { ...test('boolean-no-example'), errors: [{ messageId: 'required' }] },
-    { ...test('record-no-example'), errors: [{ messageId: 'required' }] },
-    { ...test('enum-no-example'), errors: [{ messageId: 'required' }] },
+    {
+      ...test('string-no-example'),
+      errors: [{ messageId: 'require-example' }],
+    },
+    {
+      ...test('number-no-example'),
+      errors: [{ messageId: 'require-example' }],
+    },
+    {
+      ...test('boolean-no-example'),
+      errors: [{ messageId: 'require-example' }],
+    },
+    {
+      ...test('record-no-example'),
+      errors: [{ messageId: 'require-example' }],
+    },
+    { ...test('enum-no-example'), errors: [{ messageId: 'require-example' }] },
     {
       ...test('string-optional-no-example'),
-      errors: [{ messageId: 'required' }],
+      errors: [{ messageId: 'require-example' }],
     },
     {
       ...test('string-no-example'),
-      errors: [{ messageId: 'required' }],
+      errors: [{ messageId: 'require-examples' }],
+      options: ['examples'],
+    },
+    {
+      ...test('string-no-example'),
+      errors: [{ messageId: 'require-examples' }],
       options: ['examples'],
     },
   ],

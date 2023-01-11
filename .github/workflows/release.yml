@@ -11,10 +11,11 @@ jobs:
       - name: Check out repo
         uses: actions/checkout@v3
 
-      - name: Set up Node.js 16.x
+      - name: Set up Node.js 18.x
         uses: actions/setup-node@v3
         with:
-          node-version: 16.x
+          node-version: 18.x
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
@@ -51,30 +52,14 @@ jobs:
             echo "Not pushing to master because the tag we're operating on is behind"
           fi
 
+      - name: Build
+        run: yarn build
+
       - run: npm publish
         env:
-          NPM_TOKEN: ${{secrets.NPM_TOKEN}}
+          NPM_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
 
       # See https://stackoverflow.com/a/24849501
       - run: |
           git tag -f "${{github.event.release.tag_name}}" HEAD
           git push -f origin "refs/tags/${{github.event.release.tag_name}}"
-
-changelog:
-  exclude:
-    labels:
-      - ignore-for-release
-    authors:
-      - octocat
-  categories:
-    - title: Breaking Changes 🛠
-      labels:
-        - Semver-Major
-        - breaking-change
-    - title: Exciting New Features 🎉
-      labels:
-        - Semver-Minor
-        - enhancement
-    - title: Other Changes
-      labels:
-        - '*'

@@ -4,6 +4,7 @@ import { findOpenApiCallExpression } from '../../util/traverse';
 import { getType } from '../../util/type';
 
 type Key = 'example' | 'examples';
+type MessageIds = 'require-example' | 'require-examples';
 
 const getExample = (
   properties: TSESTree.ObjectLiteralElement[],
@@ -24,7 +25,7 @@ const getExample = (
 
 const testExample = (
   node: TSESTree.Node,
-  context: Readonly<TSESLint.RuleContext<'required', [Key]>>,
+  context: Readonly<TSESLint.RuleContext<MessageIds, [Key]>>,
   openApiCallExpression: TSESTree.CallExpression,
 ) => {
   const argument = openApiCallExpression?.arguments[0];
@@ -36,7 +37,10 @@ const testExample = (
 
   if (!example) {
     return context.report({
-      messageId: 'required',
+      messageId:
+        context.options[0] === 'examples'
+          ? 'require-examples'
+          : 'require-example',
       node: openApiCallExpression,
     });
   }
@@ -52,7 +56,7 @@ const createRule = ESLintUtils.RuleCreator(
   (name) => `https://example.com/rule/${name}`,
 );
 
-export const rule = createRule<[Key], 'required'>({
+export const rule = createRule<[Key], MessageIds>({
   create(context) {
     return {
       VariableDeclaration(node) {
@@ -98,7 +102,8 @@ export const rule = createRule<[Key], 'required'>({
   meta: {
     type: 'suggestion',
     messages: {
-      required: '.openapi() example is required for Zod primatives',
+      'require-example': '.openapi() example is required for Zod primatives',
+      'require-examples': '.openapi() examples is required for Zod primatives',
     },
     schema: [
       {
