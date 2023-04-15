@@ -1,7 +1,7 @@
-# eslint-plugin-zod-to-openapi
+# eslint-plugin-zod-openapi
 
-[![npm version](https://img.shields.io/npm/v/eslint-plugin-zod-to-openapi)](https://www.npmjs.com/package/eslint-plugin-zod-to-openapi)
-[![npm downloads](https://img.shields.io/npm/dm/eslint-plugin-zod-to-openapi)](https://www.npmjs.com/package/eslint-plugin-zod-to-openapi)
+[![npm version](https://img.shields.io/npm/v/eslint-plugin-zod-openapi)](https://www.npmjs.com/package/eslint-plugin-zod-openapi)
+[![npm downloads](https://img.shields.io/npm/dm/eslint-plugin-zod-openapi)](https://www.npmjs.com/package/eslint-plugin-zod-openapi)
 [![Powered by skuba](https://img.shields.io/badge/🤿%20skuba-powered-009DC4)](https://github.com/seek-oss/skuba)
 
 ## Intoduction
@@ -31,9 +31,9 @@ This is a set of Eslint rules created for use with [@asteasolutions/zod-to-opena
 To install simply run on yarn or npm
 
 ```bash
-yarn add -D eslint-plugin-zod-to-openapi
+yarn add -D eslint-plugin-zod-openapi
 # or
-npm i -D eslint-plugin-zod-to-openapi
+npm i -D eslint-plugin-zod-openapi
 ```
 
 Add the following configuration to your `.eslintrc` file
@@ -119,17 +119,6 @@ const PersonSchema = z
     age: OtherSchema.shape.age, // ✅ correct
   })
   .openapi({ description: 'Person' });
-```
-
-This rule also requires that all Zod Schemas in the `OpenAPIRegistry.register` method require an `.openapi()` method.
-
-```ts
-const registry = new OpenAPIRegistry();
-
-export const ZodObject = registry.register(
-  'registered',
-  z.string().openapi({ description: 'hello' }), // ✅ correct
-);
 ```
 
 ### require-comment 🔧

@@ -52,17 +52,7 @@ export const rule = createRule({
         }
       },
       MemberExpression(node) {
-        if (
-          node.property.type !== 'Identifier' ||
-          node.property.name !== 'register'
-        ) {
-          return;
-        }
-        const type = getType(node, context);
-        if (
-          type?.name !== 'register' ||
-          !type.type.includes('T extends ZodType')
-        ) {
+        if (node.property.type !== 'Identifier') {
           return;
         }
 

@@ -65,7 +65,7 @@ const getType = <T extends TSESTree.Node>(
     unwrapType,
     name,
     type,
-    isZodType: name.includes('Zod'),
+    isZodType: name.includes('Zod') && !name.includes('ZodOpenApi'),
     isZodPrimative: [
       'ZodString',
       'ZodNumber',
