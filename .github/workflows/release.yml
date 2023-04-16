@@ -76,7 +76,7 @@ jobs:
             -f encoding="base64" \
             -f branch="$DESTINATION_BRANCH" \
             -f sha="$( git rev-parse $DESTINATION_BRANCH:$FILE_TO_COMMIT )" --jq '.commit.sha');
-          gh api --method POST /repos/OWNER/REPO/git/refs \
+          gh api --method POST /repos/:owner/:repo/git/refs \
             -f ref="refs/heads/${{ inputs.version }}" \
             -f sha="$sha"
       # - name: Push Tags
