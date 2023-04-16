@@ -41,17 +41,42 @@ jobs:
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
 
       - name: Version
-        run: npm version ${{ inputs.version }}
+        if: ${{ !contains(github.event.inputs.version, 'beta') }}
+        run: npm version ${{ inputs.version }} --git-tag-version=false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Push Tags
-        run: git push origin && git push --tags
+      - name: Pre Release - Version
+        if: ${{ contains(github.event.inputs.version, 'beta') }}
+        run: |
+          git checkout -b  ${{ inputs.version }}
+          git push --force --set-upstream origin
+          npm version ${{ inputs.version }} --git-tag-version=false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Release Draft
-        run: gh release edit ${{ inputs.version }} --draft=false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # - name: Pre Release - Push Tags
+      #   if: ${{ contains(github.event.inputs.version, 'beta') }}
+      #   run: git push --force --set-upstream origin ${{ inputs.version }} && git push --tags
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # - name: Push Tags
+      #   if: ${{ contains(github.event.inputs.version, 'beta') }}
+      #   run: git push --force --set-upstream origin ${{ inputs.version }} && git push --tags
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # - name: Release Draft
+      #   if: ${{ !contains(github.event.inputs.version, 'beta') }}
+      #   run: gh release edit ${{ inputs.version }} --draft=false
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # - name: Pre Release - Release Draft
+      #   if: ${{ contains(github.event.inputs.version, 'beta') }}
+      #   run: gh release edit ${{ inputs.version }} --draft=false --prerelease
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
