@@ -53,7 +53,9 @@ jobs:
           DESTINATION_BRANCH: release
 
       - name: Raise Release PR
-        run: gh pr create -f
+        run: |
+          git pull
+          gh pr create -f
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
