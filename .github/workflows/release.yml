@@ -73,7 +73,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           FILE_TO_COMMIT: package.json
-          DESTINATION_BRANCH: ${{ inputs.version }}
+          DESTINATION_BRANCH: beta
         run: |
           sha=$(gh api --method PUT /repos/:owner/:repo/contents/$FILE_TO_COMMIT \
             -f message="Release ${{ inputs.version }}" \
