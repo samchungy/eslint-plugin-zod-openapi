@@ -51,6 +51,7 @@ jobs:
         if: ${{ contains(github.event.inputs.version, 'beta') }}
         run: |
           git checkout -b  ${{ inputs.version }}
+          git push --force origin ${{ inputs.version }} --set-upstream
           npm version ${{ inputs.version }} --git-tag-version=false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
