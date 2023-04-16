@@ -1,6 +1,6 @@
 {
   "name": "eslint-plugin-zod-openapi",
-  "version": "0.0.2",
+  "version": "0.0.3-beta.4",
   "private": false,
   "description": "Eslint rules for zod-to-openapi",
   "homepage": "https://github.com/samchungy/eslint-plugin-zod-openapi#readme",
