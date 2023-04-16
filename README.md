@@ -40,28 +40,28 @@ Add the following configuration to your `.eslintrc` file
 
 ```js
 {
-  "plugins": ["zod-to-openapi"]
+  "plugins": ["zod-openapi"]
 }
 ```
 
 ```js
 {
   "rules": {
-    "zod-to-openapi/require-openapi": "error"
-    "zod-to-openapi/require-comment": "error",
-    "zod-to-openapi/prefer-zod-default": "warn",
+    "zod-openapi/require-openapi": "error"
+    "zod-openapi/require-comment": "error",
+    "zod-openapi/prefer-zod-default": "warn",
   }
 }
 ```
 
-You may wish to use overrides as this plugin by default will assume that all Zod Objects are using zod-to-openapi.
+You may wish to use overrides as this plugin by default will assume that all Zod Objects are using zod-openapi.
 
 ```js
 "overrides": [
     {
       "files": ["src/api-types/*.ts"],
       "rules": {
-        "zod-to-openapi/require-openapi": "error"
+        "zod-openapi/require-openapi": "error"
       }
     }
   ]
@@ -198,7 +198,7 @@ const UserIdSchema = z
 
 By default this rule looks for the `example` key. If you wish to use the `examples` key which is required in Open API 3.1 pass the key `examples` in the options argument of your rule configuration.
 
-eg. `'zod-to-openapi/require-example': ['error', 'examples']`
+eg. `'zod-openapi/require-example': ['error', 'examples']`
 
 ### prefer-openapi-last
 
