@@ -1,0 +1,78 @@
+name: Release Beta
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version you wish to release eg. v0.5.0'
+        required: true
+        type: string
+
+permissions: { contents: 'write' }
+
+jobs:
+  release:
+    name: Version & Publish
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Check Draft
+        run: isDraft=$(gh release view ${{ inputs.version }} --json isDraft --jq '.isDraft'); $isDraft
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Node.js 18.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Create Beta Branch
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git checkout -b beta
+          git push --force origin beta --set-upstream
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Version
+        run: |
+          npm version ${{ inputs.version }} --git-tag-version=false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push package.json and tag
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          FILE_TO_COMMIT: package.json
+          DESTINATION_BRANCH: beta
+        run: |
+          sha=$(gh api --method PUT /repos/:owner/:repo/contents/$FILE_TO_COMMIT \
+            -f message="Release ${{ inputs.version }}" \
+            -f content="$( base64 -i $FILE_TO_COMMIT )" \
+            -f encoding="base64" \
+            -f branch="$DESTINATION_BRANCH" \
+            -f sha="$( git rev-parse $DESTINATION_BRANCH:$FILE_TO_COMMIT )" --jq '.commit.sha');
+          gh api --method POST /repos/:owner/:repo/git/refs \
+            -f ref="refs/tags/${{ inputs.version }}" \
+            -f sha="$sha"
+
+      - name: Publish to npm
+        run: yarn release
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Release Draft
+        run: gh release edit ${{ inputs.version }} --draft=false --prerelease --latest=false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
