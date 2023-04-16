@@ -12,7 +12,7 @@ permissions: { contents: 'write' }
 
 jobs:
   release:
-    name: Publish & Deploy
+    name: Version & Publish
     permissions:
       contents: write
     runs-on: ubuntu-latest
