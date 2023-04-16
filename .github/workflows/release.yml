@@ -54,7 +54,7 @@ jobs:
 
       - name: Raise Release PR
         run: |
-          gh pr create -H release -B master -f
+          gh pr create -H release -B master --title "Release ${{ github.event.release.tag_name }}" --body "Please merge this with a Merge Request to update master"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
