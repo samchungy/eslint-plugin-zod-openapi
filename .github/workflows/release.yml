@@ -35,13 +35,13 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
-      - name: Pre Release - Create Branch
+      - name: Pre Release - Create Beta Branch
         if: ${{ contains(github.event.inputs.version, 'beta') }}
         run: |
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git checkout -b  ${{ inputs.version }}
-          git push --force origin ${{ inputs.version }} --set-upstream
+          git checkout -b beta
+          git push --force origin beta --set-upstream
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
