@@ -37,6 +37,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Version Package
+        run: npm version ${{ github.event.release.tag_name }} --git-tag-version=false
+
       - name: Push package.json and tags
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
