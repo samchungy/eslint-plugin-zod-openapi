@@ -35,35 +35,41 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
-      - name: Setup Git User
+      - name: Pre Release - Create Branch
+        if: ${{ contains(github.event.inputs.version, 'beta') }}
         run: |
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-
-      - name: Version
-        if: ${{ !contains(github.event.inputs.version, 'beta') }}
-        run: npm version ${{ inputs.version }} --git-tag-version=false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: Pre Release - Version
-        if: ${{ contains(github.event.inputs.version, 'beta') }}
-        run: |
           git checkout -b  ${{ inputs.version }}
           git push --force origin ${{ inputs.version }} --set-upstream
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Version
+        run: |
           npm version ${{ inputs.version }} --git-tag-version=false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Pre Release - Push Tags
-        if: ${{ contains(github.event.inputs.version, 'beta') }}
-        run: git push --force --set-upstream origin ${{ inputs.version }} && git push --tags
+      - name: Push package.json and tag
+        if: ${{ !contains(github.event.inputs.version, 'beta') }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          FILE_TO_COMMIT: package.json
+          DESTINATION_BRANCH: master
+        run: |
+          sha=$(gh api --method PUT /repos/:owner/:repo/contents/$FILE_TO_COMMIT \
+            -f message="Release ${{ inputs.version }}" \
+            -f content="$( base64 -i $FILE_TO_COMMIT )" \
+            -f encoding="base64" \
+            -f branch="$DESTINATION_BRANCH" \
+            -f sha="$( git rev-parse $DESTINATION_BRANCH:$FILE_TO_COMMIT )" --jq '.commit.sha');
+          gh api --method POST /repos/:owner/:repo/git/refs \
+            -f ref="refs/tags/${{ inputs.version }}" \
+            -f sha="$sha"
 
-      - name: Pre Release - Push package.json and tags
+      - name: Pre Release - Push package.json and tag
         if: ${{ contains(github.event.inputs.version, 'beta') }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -79,20 +85,15 @@ jobs:
           gh api --method POST /repos/:owner/:repo/git/refs \
             -f ref="refs/tags/${{ inputs.version }}" \
             -f sha="$sha"
-      # - name: Push Tags
-      #   if: ${{ contains(github.event.inputs.version, 'beta') }}
-      #   run: git push --force --set-upstream origin ${{ inputs.version }} && git push --tags
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # - name: Release Draft
-      #   if: ${{ !contains(github.event.inputs.version, 'beta') }}
-      #   run: gh release edit ${{ inputs.version }} --draft=false --prerelease=false --latest
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Release Draft
+        if: ${{ !contains(github.event.inputs.version, 'beta') }}
+        run: gh release edit ${{ inputs.version }} --draft=false --prerelease=false --latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # - name: Pre Release - Release Draft
-      #   if: ${{ contains(github.event.inputs.version, 'beta') }}
-      #   run: gh release edit ${{ inputs.version }} --draft=false --prerelease --latest=false
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Pre Release - Release Draft
+        if: ${{ contains(github.event.inputs.version, 'beta') }}
+        run: gh release edit ${{ inputs.version }} --draft=false --prerelease --latest=false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
