@@ -50,7 +50,6 @@ jobs:
           npm version ${{ inputs.version }} --git-tag-version=false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Push package.json and tag
         if: ${{ !contains(github.event.inputs.version, 'beta') }}
@@ -85,6 +84,11 @@ jobs:
           gh api --method POST /repos/:owner/:repo/git/refs \
             -f ref="refs/tags/${{ inputs.version }}" \
             -f sha="$sha"
+
+      - name: Publish to npm
+        run: npm publish
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Release Draft
         if: ${{ !contains(github.event.inputs.version, 'beta') }}
