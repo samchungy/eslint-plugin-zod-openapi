@@ -2,7 +2,8 @@ name: Release
 
 on:
   release:
-    types: [published]
+    types:
+      - released
 
 permissions: {}
 
@@ -27,40 +28,7 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
-      - name: Create Beta Branch
-        if: ${{ contains(github.event.inputs.version, 'beta') }}
-        run: |
-          git config user.name github-actions[bot]
-          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git checkout -b beta
-          git push --force origin beta --set-upstream
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Push package.json and tags
-        if: ${{ contains(github.event.inputs.version, 'beta') }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          FILE_TO_COMMIT: package.json
-          DESTINATION_BRANCH: beta
-        run: |
-          sha=$(gh api --method PUT /repos/:owner/:repo/contents/$FILE_TO_COMMIT \
-            -f message="Release ${{ inputs.version }}" \
-            -f content="$( base64 -i $FILE_TO_COMMIT )" \
-            -f encoding="base64" \
-            -f branch="$DESTINATION_BRANCH" \
-            -f sha="$( git rev-parse $DESTINATION_BRANCH:$FILE_TO_COMMIT )" --jq '.commit.sha');
-          gh api --method PATCH /repos/:owner/:repo/git/refs/refs/tags/${{ inputs.version }} \
-            -f sha="$sha"
-
-      - name: Publish to npm
-        if: ${{ contains(github.event.inputs.version, 'beta') }}
-        run: yarn release
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
       - name: Create Release Branch
-        if: ${{ !contains(github.event.inputs.version, 'beta') }}
         run: |
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
@@ -74,12 +42,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           FILE_TO_COMMIT: package.json
-          DESTINATION_BRANCH: beta
+          DESTINATION_BRANCH: release
         run: |
-          sha=$(gh api --method PUT /repos/:owner/:repo/contents/$FILE_TO_COMMIT \
+          gh api --method PUT /repos/:owner/:repo/contents/$FILE_TO_COMMIT \
             -f message="Release ${{ inputs.version }}" \
             -f content="$( base64 -i $FILE_TO_COMMIT )" \
             -f encoding="base64" \
             -f branch="$DESTINATION_BRANCH" \
-            -f sha="$( git rev-parse $DESTINATION_BRANCH:$FILE_TO_COMMIT )" --jq '.commit.sha');
+            -f sha="$( git rev-parse $DESTINATION_BRANCH:$FILE_TO_COMMIT )"
           gh pr create -f
