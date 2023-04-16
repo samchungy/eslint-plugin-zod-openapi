@@ -41,19 +41,19 @@ jobs:
         run: npm version ${{ github.event.release.tag_name }} --git-tag-version=false
 
       - name: Push package.json and tags
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          FILE_TO_COMMIT: package.json
-          DESTINATION_BRANCH: beta
         run: |
           sha=$(gh api --method PUT /repos/:owner/:repo/contents/$FILE_TO_COMMIT \
             -f message="Release ${{ github.event.release.tag_name }}" \
             -f content="$( base64 -i $FILE_TO_COMMIT )" \
             -f encoding="base64" \
             -f branch="$DESTINATION_BRANCH" \
-            -f sha="$( git rev-parse $DESTINATION_BRANCH:$FILE_TO_COMMIT )" --jq '.commit.sha');
+            -f sha="$( git rev-parse $DESTINATION_BRANCH:$FILE_TO_COMMIT )" --jq '.commit.sha')
           gh api --method PATCH /repos/:owner/:repo/git/refs/tags/${{ github.event.release.tag_name }} \
             -f sha="$sha" -F force=true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          FILE_TO_COMMIT: package.json
+          DESTINATION_BRANCH: beta
 
       - name: Publish to npm
         run: yarn release
