@@ -38,6 +38,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Version Package
+        run: npm version ${{ github.event.release.tag_name }} --git-tag-version=false
+
       - name: Push package.json and tags
         run: |
           sha=$(gh api --method PUT /repos/:owner/:repo/contents/$FILE_TO_COMMIT \
