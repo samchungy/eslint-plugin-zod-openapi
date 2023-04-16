@@ -36,28 +36,20 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
-      - name: Pre Release - Create Beta Branch
-        if: ${{ contains(github.event.inputs.version, 'beta') }}
+      - name: Create Release Branch
         run: |
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git checkout -b beta
-          git push --force origin beta --set-upstream
+          git checkout -b release
+          git push --force origin release --set-upstream
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Version
-        run: |
-          npm version ${{ inputs.version }} --git-tag-version=false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Push package.json and tag
-        if: ${{ !contains(github.event.inputs.version, 'beta') }}
+      - name: Push package.json and Create PR
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           FILE_TO_COMMIT: package.json
-          DESTINATION_BRANCH: master
+          DESTINATION_BRANCH: release
         run: |
           sha=$(gh api --method PUT /repos/:owner/:repo/contents/$FILE_TO_COMMIT \
             -f message="Release ${{ inputs.version }}" \
@@ -65,40 +57,4 @@ jobs:
             -f encoding="base64" \
             -f branch="$DESTINATION_BRANCH" \
             -f sha="$( git rev-parse $DESTINATION_BRANCH:$FILE_TO_COMMIT )" --jq '.commit.sha');
-          gh api --method POST /repos/:owner/:repo/git/refs \
-            -f ref="refs/tags/${{ inputs.version }}" \
-            -f sha="$sha"
-
-      - name: Pre Release - Push package.json and tag
-        if: ${{ contains(github.event.inputs.version, 'beta') }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          FILE_TO_COMMIT: package.json
-          DESTINATION_BRANCH: beta
-        run: |
-          sha=$(gh api --method PUT /repos/:owner/:repo/contents/$FILE_TO_COMMIT \
-            -f message="Release ${{ inputs.version }}" \
-            -f content="$( base64 -i $FILE_TO_COMMIT )" \
-            -f encoding="base64" \
-            -f branch="$DESTINATION_BRANCH" \
-            -f sha="$( git rev-parse $DESTINATION_BRANCH:$FILE_TO_COMMIT )" --jq '.commit.sha');
-          gh api --method POST /repos/:owner/:repo/git/refs \
-            -f ref="refs/tags/${{ inputs.version }}" \
-            -f sha="$sha"
-
-      - name: Publish to npm
-        run: yarn release
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: Release Draft
-        if: ${{ !contains(github.event.inputs.version, 'beta') }}
-        run: gh release edit ${{ inputs.version }} --draft=false --prerelease=false --latest
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Pre Release - Release Draft
-        if: ${{ contains(github.event.inputs.version, 'beta') }}
-        run: gh release edit ${{ inputs.version }} --draft=false --prerelease --latest=false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          gh pr create -f
