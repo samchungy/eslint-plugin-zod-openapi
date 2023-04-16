@@ -49,7 +49,7 @@ jobs:
             -f encoding="base64" \
             -f branch="$DESTINATION_BRANCH" \
             -f sha="$( git rev-parse $DESTINATION_BRANCH:$FILE_TO_COMMIT )" --jq '.commit.sha');
-          gh api --method PATCH /repos/:owner/:repo/git/refs/refs/tags/${{ github.event.inputs.tag_name }} \
+          gh api --method PATCH /repos/:owner/:repo/git/refs/tags/${{ github.event.inputs.tag_name }} \
             -f sha="$sha"
 
       - name: Publish to npm
