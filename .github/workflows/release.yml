@@ -70,15 +70,12 @@ jobs:
           FILE_TO_COMMIT: package.json
           DESTINATION_BRANCH: ${{ inputs.version }}
         run: |
-          sha=$(gh api --method PUT /repos/:owner/:repo/contents/$FILE_TO_COMMIT \
+          sha=$(gh api --method PUT /repos/:owner/:repo/contents/$(FILE_TO_COMMIT) \
             -f message="Release ${{ inputs.version }}" \
-            -f content="$( base64 -i $FILE_TO_COMMIT )" \
+            -f content="$( base64 -i $(FILE_TO_COMMIT) )" \
             -f encoding="base64" \
-            -f branch="$DESTINATION_BRANCH" \
-            -f sha="$( git rev-parse $DESTINATION_BRANCH:$FILE_TO_COMMIT )" --jq '.commit.sha')
-          gh api --method POST /repos/:owner/:repo/git/refs \
-            -f ref='refs/tags/${{ inputs.version }}' \   
-            -f sha='$(sha)'
+            -f branch="$(DESTINATION_BRANCH)" \
+            -f sha="$( git rev-parse $(DESTINATION_BRANCH):$(FILE_TO_COMMIT) )" --jq '.commit.sha');
 
       # - name: Push Tags
       #   if: ${{ contains(github.event.inputs.version, 'beta') }}
