@@ -54,8 +54,7 @@ jobs:
 
       - name: Raise Release PR
         run: |
-          git pull
-          gh pr create -f
+          gh pr create -H release -B master -f
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
