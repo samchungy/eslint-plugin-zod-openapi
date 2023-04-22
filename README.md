@@ -1,30 +1,11 @@
 # eslint-plugin-zod-openapi
 
-[![npm version](https://img.shields.io/npm/v/eslint-plugin-zod-openapi)](https://www.npmjs.com/package/eslint-plugin-zod-openapi)
-[![npm downloads](https://img.shields.io/npm/dm/eslint-plugin-zod-openapi)](https://www.npmjs.com/package/eslint-plugin-zod-openapi)
-[![Powered by skuba](https://img.shields.io/badge/🤿%20skuba-powered-009DC4)](https://github.com/seek-oss/skuba)
-
-## Intoduction
-
 This is a set of Eslint rules created for use with [zod-openapi](https://github.com/samchungy/zod-openapi). This aims to optimise the overall developer experience with a little sprinkle of magic ✨.
 
-## Table of Contents
-
-- [Installation](#installation)
-- [Rules](#rules)
-  - [require-openapi](#require-openapi)
-  - [require-comment 🔧](#require-comment-)
-  - [require-example](#require-example)
-  - [prefer-openapi-last](#prefer-openapi-last)
-  - [prefer-zod-default](#prefer-zod-default)
-- [Development](#development)
-  - [Test](#test)
-  - [Lint](#lint)
-  - [Package](#package)
-- [Release](#release)
-  - [Commit messages](#commit-messages)
-  - [Releasing latest](#releasing-latest)
-  - [Releasing other dist-tags](#releasing-other-dist-tags)
+[![npm version](https://img.shields.io/npm/v/eslint-plugin-zod-openapi)](https://www.npmjs.com/package/eslint-plugin-zod-openapi)
+[![npm downloads](https://img.shields.io/npm/dm/eslint-plugin-zod-openapi)](https://www.npmjs.com/package/eslint-plugin-zod-openapi)
+[![Node.js version](https://img.shields.io/badge/node-%3E%3D%2016.11-brightgreen)](https://nodejs.org/en/)
+[![Powered by skuba](https://img.shields.io/badge/🤿%20skuba-powered-009DC4)](https://github.com/seek-oss/skuba)
 
 ## Installation
 
