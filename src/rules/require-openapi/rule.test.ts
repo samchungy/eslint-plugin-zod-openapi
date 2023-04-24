@@ -24,6 +24,7 @@ ruleTester.run(ruleName, rule, {
     test('reference'),
     test('object-shape-reference'),
     test('object-property-reference-optional'),
+    test('object-property-shape-optional'),
   ],
   invalid: [
     {

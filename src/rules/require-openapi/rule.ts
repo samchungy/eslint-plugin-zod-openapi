@@ -55,7 +55,8 @@ export const rule: TSESLint.RuleModule<any, any> = createRule({
           type.name.startsWith('ZodOptional') &&
           node.value.type === 'CallExpression' &&
           node.value.callee.type === 'MemberExpression' &&
-          node.value.callee.object.type === 'Identifier'
+          (node.value.callee.object.type === 'Identifier' ||
+            node.value.callee.object.type === 'MemberExpression')
         ) {
           return;
         }
