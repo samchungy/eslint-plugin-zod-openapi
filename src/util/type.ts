@@ -81,9 +81,12 @@ const getFlowNode = (
   baseIdentifier: TSESTree.Node,
 ): ts.Node & { name?: ts.Node } => {
   if (
-    baseIdentifier.parent?.type !== 'Property' ||
     !('flowNode' in node) ||
-    !node.flowNode
+    !node.flowNode ||
+    baseIdentifier.type !== 'Identifier' ||
+    baseIdentifier.parent?.type !== 'Property' ||
+    baseIdentifier.parent.key?.type !== 'Identifier' ||
+    baseIdentifier.name !== baseIdentifier.parent.key.name
   ) {
     return node;
   }
