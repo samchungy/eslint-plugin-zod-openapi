@@ -36,6 +36,10 @@ export const rule = createRule({
         }
       },
       Property(node) {
+        if (node.value.type === 'Identifier') {
+          return;
+        }
+
         const type = getType(node, context);
 
         if (!type?.isZodType || type.name === 'ZodLiteral') {
@@ -44,7 +48,7 @@ export const rule = createRule({
 
         const openApiCallExpression = findOpenApiCallExpression(node);
 
-        if (!openApiCallExpression && !getInferredComment(node, context)) {
+        if (!openApiCallExpression) {
           return context.report({
             messageId: 'open-api-required',
             node: node.key,
