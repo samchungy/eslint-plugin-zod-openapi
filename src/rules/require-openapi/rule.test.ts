@@ -22,6 +22,7 @@ ruleTester.run(ruleName, rule, {
     test('literal-no-openapi'),
     test('optional-no-openapi'),
     test('reference'),
+    test('object-shape-reference'),
   ],
   invalid: [
     {
