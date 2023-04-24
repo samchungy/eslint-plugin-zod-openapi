@@ -1,4 +1,4 @@
-import { ESLintUtils } from '@typescript-eslint/utils';
+import { ESLintUtils, TSESLint } from '@typescript-eslint/utils';
 
 import { findOpenApiCallExpression } from '../../util/traverse';
 import { getInferredComment, getType } from '../../util/type';
@@ -8,7 +8,7 @@ const createRule = ESLintUtils.RuleCreator(
   (name) => `https://example.com/rule/${name}`,
 );
 
-export const rule = createRule({
+export const rule: TSESLint.RuleModule<any, any> = createRule({
   create(context) {
     return {
       VariableDeclaration(node) {
