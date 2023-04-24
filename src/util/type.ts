@@ -76,6 +76,26 @@ const getType = <T extends TSESTree.Node>(
   };
 };
 
+const getFlowNode = (
+  node: ts.Node,
+  baseIdentifier: TSESTree.Node,
+): ts.Node & { name?: ts.Node } => {
+  if (
+    baseIdentifier.parent?.type !== 'Property' ||
+    !('flowNode' in node) ||
+    !node.flowNode
+  ) {
+    return node;
+  }
+
+  const flowNode = node.flowNode;
+  if (typeof flowNode !== 'object' || !('node' in flowNode) || !flowNode.node) {
+    return node;
+  }
+
+  return flowNode.node as ts.Node & { name: ts.Node };
+};
+
 const getInferredComment = <T extends TSESTree.Node>(
   node: T,
   context: Readonly<TSESLint.RuleContext<any, any>>,
@@ -89,13 +109,22 @@ const getInferredComment = <T extends TSESTree.Node>(
     return;
   }
 
+  if (
+    baseIdentifier.parent?.type === 'Property' &&
+    baseIdentifier.parent.parent?.type === 'ObjectExpression' &&
+    baseIdentifier.parent.parent.parent?.type !== 'CallExpression'
+  ) {
+    return;
+  }
+
   // 1. Grab the TypeScript program from parser services
   const parserServices = ESLintUtils.getParserServices(context);
   const checker = parserServices.program.getTypeChecker();
 
   // 2. Find the backing TS node for the ES node, then that TS type
   const originalNode = parserServices.esTreeNodeToTSNodeMap.get(baseIdentifier);
-  const symbol = checker.getSymbolAtLocation(originalNode);
+  const flowNode = getFlowNode(originalNode, baseIdentifier);
+  const symbol = checker.getSymbolAtLocation(flowNode?.name ?? flowNode);
 
   if (!symbol) {
     return;

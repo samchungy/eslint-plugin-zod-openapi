@@ -115,5 +115,9 @@ ruleTester.run(ruleName, rule, {
       ...test('string-example-wrong', true),
       errors: [{ messageId: 'comment' }],
     },
+    {
+      ...test('object-shorthand-property', true),
+      errors: [{ messageId: 'comment' }],
+    },
   ],
 });
