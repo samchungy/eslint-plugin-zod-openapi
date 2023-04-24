@@ -44,7 +44,6 @@ ruleTester.run(ruleName, rule, {
     {
       ...test('string-description-wrong-comment-indent', true),
       errors: [{ messageId: 'comment' }],
-      only: true,
     },
     {
       ...test('string-description-no-comment-indent', true),
@@ -57,7 +56,7 @@ ruleTester.run(ruleName, rule, {
     {
       ...test(
         'object-property-description-no-comment-same-line-disable-prettier',
-        // true,
+        true,
       ),
       errors: [{ messageId: 'comment' }],
     },
