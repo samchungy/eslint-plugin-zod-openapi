@@ -36,7 +36,12 @@ export const rule: TSESLint.RuleModule<any, any> = createRule({
         }
       },
       Property(node) {
-        if (node.value.type === 'Identifier') {
+        if (
+          node.value.type === 'Identifier' ||
+          node.value.type === 'Literal' ||
+          (node.value.type === 'MemberExpression' &&
+            node.value.property.type === 'Identifier')
+        ) {
           return;
         }
 
