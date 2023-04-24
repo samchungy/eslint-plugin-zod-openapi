@@ -51,6 +51,15 @@ export const rule: TSESLint.RuleModule<any, any> = createRule({
           return;
         }
 
+        if (
+          type.name.startsWith('ZodOptional') &&
+          node.value.type === 'CallExpression' &&
+          node.value.callee.type === 'MemberExpression' &&
+          node.value.callee.object.type === 'Identifier'
+        ) {
+          return;
+        }
+
         const openApiCallExpression = findOpenApiCallExpression(node);
 
         if (!openApiCallExpression) {
