@@ -1554,7 +1554,12 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-18.11.10.tgz#4c64759f3c2343b7e6c4b9caf761c7a3a05cee34"
   integrity sha512-juG3RWMBOqcOuXC643OAdSA525V44cVgGV6dUDuiFtss+8Fk5x1hI93Rsld43VeJVIeqlP9I7Fn9/qaVqoEAuQ==
 
-"@types/node@18.15.11", "@types/node@>=16.11":
+"@types/node@18.16.0":
+  version "18.16.0"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-18.16.0.tgz#4668bc392bb6938637b47e98b1f2ed5426f33316"
+  integrity sha512-BsAaKhB+7X+H4GnSjGhJG9Qi8Tw+inU9nJDwmD5CgOmBLEI6ArdhikpLX7DjbjDRDTbqZzU2LSQNZg8WGPiSZQ==
+
+"@types/node@>=16.11":
   version "18.15.11"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-18.15.11.tgz#b3b790f09cb1696cffcec605de025b088fa4225f"
   integrity sha512-E5Kwq2n4SbMzQOn6wnmBjuK9ouqlURrcZDVfbo9ftDDTFt3nk7ZKK4GMOzoYgnpQJKcxwQw+lGaBvvlMo0qN/Q==
@@ -1713,7 +1718,7 @@
     eslint-scope "^5.1.1"
     semver "^7.3.7"
 
-"@typescript-eslint/utils@^5.10.0", "@typescript-eslint/utils@^5.58.0":
+"@typescript-eslint/utils@^5.10.0", "@typescript-eslint/utils@^5.59.0":
   version "5.59.0"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/utils/-/utils-5.59.0.tgz#063d066b3bc4850c18872649ed0da9ee72d833d5"
   integrity sha512-GGLFd+86drlHSvPgN/el6dRQNYYGOvRSDVydsUaQluwIW3HvbXuxyuD5JETvBt/9qGYe+lOrDk6gRrWOHb/FvA==
@@ -7414,10 +7419,10 @@ yocto-queue@^0.1.0:
   resolved "https://registry.yarnpkg.com/yocto-queue/-/yocto-queue-0.1.0.tgz#0294eb3dee05028d31ee1a5fa2c556a6aaf10a1b"
   integrity sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==
 
-zod-openapi@0.5.0:
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/zod-openapi/-/zod-openapi-0.5.0.tgz#741f1a4d1950e3e904c932cb22737560d2df246c"
-  integrity sha512-za5vJsKBERhesXwTbKbOkrFhzkv88A9jEiR+l39M3lsZg1JF4vxtG5GuoqQAzk5vPUSf0mJTAy/qeRKI0ku+sA==
+zod-openapi@0.9.0:
+  version "0.9.0"
+  resolved "https://registry.yarnpkg.com/zod-openapi/-/zod-openapi-0.9.0.tgz#2d43862ae2789fd628de2e16b75db7e764cd6211"
+  integrity sha512-gqZO03nCuxPFPxftBTo4Hc+4ViU/94zh7HzaGq9ZN1Wjej21wXJakwTWjIpM9H721ZIIuTUS9fVxJEvheasoFQ==
   dependencies:
     openapi3-ts "4.0.4"
     yaml "2.2.1"
