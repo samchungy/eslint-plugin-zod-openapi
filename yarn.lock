@@ -7412,10 +7412,10 @@ yocto-queue@^0.1.0:
   resolved "https://registry.yarnpkg.com/yocto-queue/-/yocto-queue-0.1.0.tgz#0294eb3dee05028d31ee1a5fa2c556a6aaf10a1b"
   integrity sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==
 
-zod-openapi@2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/zod-openapi/-/zod-openapi-2.1.0.tgz#06fe252484f41e600db50e4c01e33b4eafaf2db5"
-  integrity sha512-mur2UxpM5eIndxw78bN2laeSNIye/rmBd5U4ysESzqBa8c9pvs3xU+CKPvWtxn7/E9Oe0asbOEn5L9IPfpdnlw==
+zod-openapi@2.2.2:
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/zod-openapi/-/zod-openapi-2.2.2.tgz#675aa5ff436d3e78e0cd41792c57ecda9181548e"
+  integrity sha512-MCiubUxrYdlD0aqj7WyuqA8x45e6TQrBIQ5afoURLK13ZgKdr0W02lG8tR93mlAsZ+nO4Z48b7sGfkZ+2wrGZw==
 
 zod@3.21.4:
   version "3.21.4"

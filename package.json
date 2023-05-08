@@ -37,7 +37,7 @@
     "@types/node": "18.16.0",
     "skuba": "6.0.2",
     "zod": "3.21.4",
-    "zod-openapi": "2.1.0"
+    "zod-openapi": "2.2.2"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
