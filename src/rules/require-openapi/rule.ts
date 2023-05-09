@@ -1,4 +1,4 @@
-import { ESLintUtils, TSESLint } from '@typescript-eslint/utils';
+import { ESLintUtils, type TSESLint } from '@typescript-eslint/utils';
 
 import { findOpenApiCallExpression } from '../../util/traverse';
 import { getInferredComment, getType } from '../../util/type';

@@ -1,7 +1,7 @@
 import { readdirSync } from 'node:fs';
 import path from 'node:path';
 
-import { TSESLint } from '@typescript-eslint/utils';
+import type { TSESLint } from '@typescript-eslint/utils';
 const rulesDir = path.join(__dirname, 'rules');
 const ruleFolders = readdirSync(rulesDir);
 
