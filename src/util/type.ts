@@ -1,4 +1,8 @@
-import { ESLintUtils, TSESLint, TSESTree } from '@typescript-eslint/utils';
+import {
+  ESLintUtils,
+  type TSESLint,
+  type TSESTree,
+} from '@typescript-eslint/utils';
 import ts from 'typescript';
 
 import { getBaseIdentifier, getIdentifier } from './traverse';

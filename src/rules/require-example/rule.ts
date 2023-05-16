@@ -1,4 +1,8 @@
-import { ESLintUtils, TSESLint, TSESTree } from '@typescript-eslint/utils';
+import {
+  ESLintUtils,
+  type TSESLint,
+  type TSESTree,
+} from '@typescript-eslint/utils';
 
 import { findOpenApiCallExpression } from '../../util/traverse';
 import { getType } from '../../util/type';
