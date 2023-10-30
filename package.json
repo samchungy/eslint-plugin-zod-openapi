@@ -35,7 +35,7 @@
   },
   "devDependencies": {
     "@types/node": "20.2.3",
-    "skuba": "6.2.0",
+    "skuba": "7.2.0",
     "zod": "3.22.2",
     "zod-openapi": "2.9.1"
   },
