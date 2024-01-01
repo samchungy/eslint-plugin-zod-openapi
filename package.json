@@ -31,7 +31,7 @@
     "test:watch": "skuba test --watch"
   },
   "dependencies": {
-    "@typescript-eslint/utils": "^5.59.0"
+    "@typescript-eslint/utils": "^6.17.0"
   },
   "devDependencies": {
     "@types/node": "20.2.3",
