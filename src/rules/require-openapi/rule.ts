@@ -1,4 +1,8 @@
-import { ESLintUtils, type TSESLint } from '@typescript-eslint/utils';
+import {
+  AST_NODE_TYPES,
+  ESLintUtils,
+  type TSESLint,
+} from '@typescript-eslint/utils';
 
 import { findOpenApiCallExpression } from '../../util/traverse';
 import { getInferredComment, getType } from '../../util/type';
@@ -8,7 +12,10 @@ const createRule = ESLintUtils.RuleCreator(
   (name) => `https://example.com/rule/${name}`,
 );
 
-export const rule: TSESLint.RuleModule<any, any> = createRule({
+export const rule: TSESLint.RuleModule<
+  'open-api-required',
+  readonly unknown[]
+> = createRule({
   create(context) {
     return {
       VariableDeclaration(node) {
@@ -37,10 +44,10 @@ export const rule: TSESLint.RuleModule<any, any> = createRule({
       },
       Property(node) {
         if (
-          node.value.type === 'Identifier' ||
-          node.value.type === 'Literal' ||
-          (node.value.type === 'MemberExpression' &&
-            node.value.property.type === 'Identifier')
+          node.value.type === AST_NODE_TYPES.Identifier ||
+          node.value.type === AST_NODE_TYPES.Literal ||
+          (node.value.type === AST_NODE_TYPES.MemberExpression &&
+            node.value.property.type === AST_NODE_TYPES.Identifier)
         ) {
           return;
         }
@@ -53,10 +60,10 @@ export const rule: TSESLint.RuleModule<any, any> = createRule({
 
         if (
           type.name.startsWith('ZodOptional') &&
-          node.value.type === 'CallExpression' &&
-          node.value.callee.type === 'MemberExpression' &&
-          (node.value.callee.object.type === 'Identifier' ||
-            node.value.callee.object.type === 'MemberExpression')
+          node.value.type === AST_NODE_TYPES.CallExpression &&
+          node.value.callee.type === AST_NODE_TYPES.MemberExpression &&
+          (node.value.callee.object.type === AST_NODE_TYPES.Identifier ||
+            node.value.callee.object.type === AST_NODE_TYPES.MemberExpression)
         ) {
           return;
         }
@@ -71,13 +78,13 @@ export const rule: TSESLint.RuleModule<any, any> = createRule({
         }
       },
       MemberExpression(node) {
-        if (node.property.type !== 'Identifier') {
+        if (node.property.type !== AST_NODE_TYPES.Identifier) {
           return;
         }
 
         const parent = node.parent;
 
-        if (parent?.type !== 'CallExpression') {
+        if (parent?.type !== AST_NODE_TYPES.CallExpression) {
           return;
         }
 
