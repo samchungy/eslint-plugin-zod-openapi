@@ -1,4 +1,6 @@
 import {
+  AST_NODE_TYPES,
+  AST_TOKEN_TYPES,
   ESLintUtils,
   type TSESLint,
   type TSESTree,
@@ -24,7 +26,7 @@ const getCommentValue = (comment: string): string | undefined => {
 };
 
 export const getCommentNode = (node: TSESTree.Node): TSESTree.Node => {
-  if (node.parent?.type === 'ExportNamedDeclaration') {
+  if (node.parent?.type === AST_NODE_TYPES.ExportNamedDeclaration) {
     return node.parent;
   }
 
@@ -33,10 +35,12 @@ export const getCommentNode = (node: TSESTree.Node): TSESTree.Node => {
 
 export const getComment = (
   node: TSESTree.Node,
-  context: Readonly<TSESLint.RuleContext<any, any>>,
+  context: Readonly<
+    TSESLint.RuleContext<'required' | 'comment', readonly unknown[]>
+  >,
 ): TSESTree.BlockComment | undefined => {
   const comment = context.getSourceCode().getCommentsBefore(node).at(-1);
-  return comment?.type === 'Block' ? comment : undefined;
+  return comment?.type === AST_TOKEN_TYPES.Block ? comment : undefined;
 };
 
 const createCommentValue = (
@@ -68,7 +72,7 @@ ${indent}`;
 
 export const isNewLineRequired = (node: TSESTree.Property) => {
   const objectExpression = node.parent;
-  if (objectExpression?.type !== 'ObjectExpression') {
+  if (objectExpression?.type !== AST_NODE_TYPES.ObjectExpression) {
     return false;
   }
 
@@ -83,7 +87,7 @@ export const isNewLineRequired = (node: TSESTree.Property) => {
   if (
     objectExpression.properties.some(
       (property) =>
-        property.type === 'Property' &&
+        property.type === AST_NODE_TYPES.Property &&
         node.range[0] !== property.range[0] &&
         node.range[1] !== property.range[1] &&
         node.loc.start.line === property.loc.start.line,
@@ -104,8 +108,8 @@ const getPropertyNode = (
   | undefined => {
   for (const property of properties) {
     if (
-      property.type === 'Property' &&
-      property.key.type === 'Identifier' &&
+      property.type === AST_NODE_TYPES.Property &&
+      property.key.type === AST_NODE_TYPES.Identifier &&
       property.key.name === key
     ) {
       return property;
@@ -121,14 +125,14 @@ const getExampleValue = (
   const example = getPropertyNode(properties, 'example');
 
   if (examples) {
-    if (examples.value.type !== 'ArrayExpression') {
+    if (examples.value.type !== AST_NODE_TYPES.ArrayExpression) {
       // This should always be an array if not ts compiler will complain
       return;
     }
 
     const element = examples.value.elements?.[0];
 
-    if (!element || element.type !== 'Literal') {
+    if (!element || element.type !== AST_NODE_TYPES.Literal) {
       return;
     }
 
@@ -137,7 +141,7 @@ const getExampleValue = (
   }
 
   if (example) {
-    if (example.value.type !== 'Literal') {
+    if (example.value.type !== AST_NODE_TYPES.Literal) {
       return;
     }
 
@@ -157,7 +161,7 @@ const getLiteralValue = (
     return undefined;
   }
 
-  if (property.value.type === 'Literal') {
+  if (property.value.type === AST_NODE_TYPES.Literal) {
     return property.value.value;
   }
   return undefined;
@@ -165,7 +169,7 @@ const getLiteralValue = (
 
 const getExpectedCommentValue = (
   node: TSESTree.VariableDeclarator | TSESTree.Property,
-  context: Readonly<TSESLint.RuleContext<any, any>>,
+  context: Readonly<TSESLint.RuleContext<string, readonly unknown[]>>,
 ) => {
   const openApiCallExpression = findOpenApiCallExpression(node);
   if (!openApiCallExpression) {
@@ -173,7 +177,7 @@ const getExpectedCommentValue = (
   }
 
   const argument = openApiCallExpression?.arguments[0];
-  if (!argument || argument.type !== 'ObjectExpression') {
+  if (!argument || argument.type !== AST_NODE_TYPES.ObjectExpression) {
     return;
   }
 
@@ -333,10 +337,10 @@ export const rule = createRule({
       TSTypeReference(node) {
         // only check z.infer, z.input, z.output
         if (
-          node.typeName.type !== 'TSQualifiedName' ||
-          node.typeName.left.type !== 'Identifier' ||
+          node.typeName.type !== AST_NODE_TYPES.TSQualifiedName ||
+          node.typeName.left.type !== AST_NODE_TYPES.Identifier ||
           node.typeName.left.name !== 'z' ||
-          node.typeName.right.type !== 'Identifier' ||
+          node.typeName.right.type !== AST_NODE_TYPES.Identifier ||
           (node.typeName.right.name !== 'infer' &&
             node.typeName.right.name !== 'input' &&
             node.typeName.right.name !== 'output')
@@ -344,22 +348,25 @@ export const rule = createRule({
           return;
         }
 
-        if (node.typeParameters?.type !== 'TSTypeParameterInstantiation') {
+        if (
+          node.typeParameters?.type !==
+          AST_NODE_TYPES.TSTypeParameterInstantiation
+        ) {
           return;
         }
 
         const param = node.typeParameters.params[0];
 
         if (
-          param?.type !== 'TSTypeQuery' ||
-          param.exprName.type !== 'Identifier'
+          param?.type !== AST_NODE_TYPES.TSTypeQuery ||
+          param.exprName.type !== AST_NODE_TYPES.Identifier
         ) {
           return;
         }
 
         const declaration = node.parent;
 
-        if (declaration?.type !== 'TSTypeAliasDeclaration') {
+        if (declaration?.type !== AST_NODE_TYPES.TSTypeAliasDeclaration) {
           return;
         }
 

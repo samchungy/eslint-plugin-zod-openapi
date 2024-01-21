@@ -1,4 +1,5 @@
 import {
+  AST_NODE_TYPES,
   ESLintUtils,
   type TSESLint,
   type TSESTree,
@@ -18,14 +19,14 @@ const getPropType = (
   }
   const propSymbol = checker.getTypeOfSymbolAtLocation(
     prop,
-    prop.valueDeclaration!,
+    prop.valueDeclaration as ts.Declaration,
   );
   return checker.typeToString(propSymbol);
 };
 
 const getType = <T extends TSESTree.Node>(
   node: T,
-  context: Readonly<TSESLint.RuleContext<any, any>>,
+  context: Readonly<TSESLint.RuleContext<string, readonly unknown[]>>,
 ):
   | {
       defType: string | undefined;
@@ -58,7 +59,7 @@ const getType = <T extends TSESTree.Node>(
 
   const constructorType = checker.getTypeOfSymbolAtLocation(
     symbol,
-    symbol.valueDeclaration!,
+    symbol.valueDeclaration as ts.Declaration,
   );
 
   const type = checker.typeToString(constructorType);
@@ -87,9 +88,9 @@ const getFlowNode = (
   if (
     !('flowNode' in node) ||
     !node.flowNode ||
-    baseIdentifier.type !== 'Identifier' ||
-    baseIdentifier.parent?.type !== 'Property' ||
-    baseIdentifier.parent.key?.type !== 'Identifier' ||
+    baseIdentifier.type !== AST_NODE_TYPES.Identifier ||
+    baseIdentifier.parent?.type !== AST_NODE_TYPES.Property ||
+    baseIdentifier.parent.key?.type !== AST_NODE_TYPES.Identifier ||
     baseIdentifier.name !== baseIdentifier.parent.key.name
   ) {
     return node;
@@ -105,7 +106,7 @@ const getFlowNode = (
 
 const getInferredComment = <T extends TSESTree.Node>(
   node: T,
-  context: Readonly<TSESLint.RuleContext<any, any>>,
+  context: Readonly<TSESLint.RuleContext<string, readonly unknown[]>>,
 ): string | undefined => {
   const identifier = getIdentifier(node);
   if (!identifier) {
@@ -117,9 +118,9 @@ const getInferredComment = <T extends TSESTree.Node>(
   }
 
   if (
-    baseIdentifier.parent?.type === 'Property' &&
-    baseIdentifier.parent.parent?.type === 'ObjectExpression' &&
-    baseIdentifier.parent.parent.parent?.type !== 'CallExpression'
+    baseIdentifier.parent?.type === AST_NODE_TYPES.Property &&
+    baseIdentifier.parent.parent?.type === AST_NODE_TYPES.ObjectExpression &&
+    baseIdentifier.parent.parent.parent?.type !== AST_NODE_TYPES.CallExpression
   ) {
     return;
   }
@@ -145,7 +146,7 @@ const getInferredComment = <T extends TSESTree.Node>(
     aliasedSymbol.getDocumentationComment(checker),
   );
   const jsDoc = aliasedSymbol.getJsDocTags(checker);
-  const tags = jsDoc.map((doc) => `@${doc.name} ${doc?.text?.[0].text ?? ''}`);
+  const tags = jsDoc.map((doc) => `@${doc.name} ${doc?.text?.[0]?.text ?? ''}`);
   return `${comment}${comment && tags.length ? '\n' : ''}${tags.join(' ')}`;
 };
 

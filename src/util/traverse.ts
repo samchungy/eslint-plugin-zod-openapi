@@ -1,21 +1,21 @@
-import type { TSESTree } from '@typescript-eslint/utils';
+import { AST_NODE_TYPES, type TSESTree } from '@typescript-eslint/utils';
 
 const findOpenApiInChain = (
   root: TSESTree.CallExpression,
 ): TSESTree.CallExpression | undefined => {
   const callee = root.callee;
-  if (callee.type !== 'MemberExpression') {
+  if (callee.type !== AST_NODE_TYPES.MemberExpression) {
     return;
   }
 
   const property = callee.property;
-  if (property.type === 'Identifier') {
+  if (property.type === AST_NODE_TYPES.Identifier) {
     if (property.name === 'openapi') {
       return root;
     }
   }
 
-  if (callee.object.type === 'CallExpression') {
+  if (callee.object.type === AST_NODE_TYPES.CallExpression) {
     return findOpenApiInChain(callee.object);
   }
 
@@ -28,25 +28,25 @@ export const findOpenApiCallExpression = (
     | TSESTree.Property
     | TSESTree.CallExpressionArgument,
 ): TSESTree.CallExpression | undefined => {
-  if (node.type === 'VariableDeclarator') {
+  if (node.type === AST_NODE_TYPES.VariableDeclarator) {
     const init = node.init;
-    if (!init || init.type !== 'CallExpression') {
+    if (!init || init.type !== AST_NODE_TYPES.CallExpression) {
       return;
     }
 
     return findOpenApiInChain(init);
   }
 
-  if (node.type === 'Property') {
+  if (node.type === AST_NODE_TYPES.Property) {
     const value = node.value;
-    if (!value || value.type !== 'CallExpression') {
+    if (!value || value.type !== AST_NODE_TYPES.CallExpression) {
       return;
     }
 
     return findOpenApiInChain(value);
   }
 
-  if (node.type === 'CallExpression') {
+  if (node.type === AST_NODE_TYPES.CallExpression) {
     return findOpenApiInChain(node);
   }
 
@@ -56,26 +56,26 @@ export const findOpenApiCallExpression = (
 export const getIdentifier = <T extends TSESTree.Node>(
   node: T,
 ): TSESTree.Identifier | undefined => {
-  if (node.type === 'Identifier') {
+  if (node.type === AST_NODE_TYPES.Identifier) {
     return node;
   }
 
-  if (node.type === 'VariableDeclarator') {
+  if (node.type === AST_NODE_TYPES.VariableDeclarator) {
     if (!node.init) {
       return;
     }
     return getIdentifier(node.init);
   }
 
-  if (node.type === 'Property') {
+  if (node.type === AST_NODE_TYPES.Property) {
     return getIdentifier(node.value);
   }
 
-  if (node.type === 'MemberExpression') {
+  if (node.type === AST_NODE_TYPES.MemberExpression) {
     return getIdentifier(node.property);
   }
 
-  if (node.type === 'CallExpression') {
+  if (node.type === AST_NODE_TYPES.CallExpression) {
     return getIdentifier(node.callee);
   }
 
@@ -88,7 +88,7 @@ export const getBaseIdentifier = (
   // Ignore .optional()
   if (
     identifier.name === 'optional' &&
-    identifier.parent?.type === 'MemberExpression'
+    identifier.parent?.type === AST_NODE_TYPES.MemberExpression
   ) {
     return identifier.parent.object;
   }

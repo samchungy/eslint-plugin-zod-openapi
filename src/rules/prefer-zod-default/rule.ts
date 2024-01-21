@@ -1,4 +1,5 @@
 import {
+  AST_NODE_TYPES,
   ESLintUtils,
   type TSESLint,
   type TSESTree,
@@ -12,8 +13,8 @@ const getDefault = (
 ): TSESTree.Property | undefined => {
   for (const property of properties) {
     if (
-      property.type === 'Property' &&
-      property.key.type === 'Identifier' &&
+      property.type === AST_NODE_TYPES.Property &&
+      property.key.type === AST_NODE_TYPES.Identifier &&
       property.key.name === 'default'
     ) {
       return property;
@@ -24,11 +25,11 @@ const getDefault = (
 
 const testDefault = (
   _node: TSESTree.Node,
-  context: Readonly<TSESLint.RuleContext<any, any>>,
+  context: Readonly<TSESLint.RuleContext<'prefer', readonly unknown[]>>,
   openApiCallExpression: TSESTree.CallExpression,
 ) => {
   const argument = openApiCallExpression?.arguments[0];
-  if (!argument || argument.type !== 'ObjectExpression') {
+  if (!argument || argument.type !== AST_NODE_TYPES.ObjectExpression) {
     return;
   }
 

@@ -1,4 +1,5 @@
 import {
+  AST_NODE_TYPES,
   ESLintUtils,
   type TSESLint,
   type TSESTree,
@@ -16,8 +17,8 @@ const getExample = (
 ): TSESTree.Property | undefined => {
   for (const property of properties) {
     if (
-      property.type === 'Property' &&
-      property.key.type === 'Identifier' &&
+      property.type === AST_NODE_TYPES.Property &&
+      property.key.type === AST_NODE_TYPES.Identifier &&
       ((key === 'examples' && property.key.name === 'examples') ||
         ((!key || key === 'example') && property.key.name === 'example'))
     ) {
@@ -33,7 +34,7 @@ const testExample = (
   openApiCallExpression: TSESTree.CallExpression,
 ) => {
   const argument = openApiCallExpression?.arguments[0];
-  if (!argument || argument.type !== 'ObjectExpression') {
+  if (!argument || argument.type !== AST_NODE_TYPES.ObjectExpression) {
     return;
   }
 
@@ -69,7 +70,7 @@ export const rule = createRule<[Key], MessageIds>({
           return;
         }
 
-        if (declarator.init?.type === 'Identifier') {
+        if (declarator.init?.type === AST_NODE_TYPES.Identifier) {
           return;
         }
 
