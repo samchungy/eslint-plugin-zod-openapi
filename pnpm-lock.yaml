@@ -20,11 +20,11 @@ devDependencies:
     specifier: 7.4.1
     version: 7.4.1(@babel/core@7.23.9)
   zod:
-    specifier: 3.22.4
-    version: 3.22.4
+    specifier: 3.23.8
+    version: 3.23.8
   zod-openapi:
     specifier: 2.13.0
-    version: 2.13.0(zod@3.22.4)
+    version: 2.13.0(zod@3.23.8)
 
 packages:
 
@@ -6366,7 +6366,7 @@ packages:
       tsconfig-seek: 2.0.0
       typescript: 5.3.3
       validate-npm-package-name: 5.0.0
-      zod: 3.22.4
+      zod: 3.23.8
     transitivePeerDependencies:
       - '@babel/core'
       - '@swc/core'
@@ -7335,15 +7335,15 @@ packages:
     engines: {node: '>=12.20'}
     dev: true
 
-  /zod-openapi@2.13.0(zod@3.22.4):
+  /zod-openapi@2.13.0(zod@3.23.8):
     resolution: {integrity: sha512-BHkYeCQkMQaQb264oeeLm9zjmKIvAtDNv/IOPIIiso3s5/YGOSRm6CzEbqDn286W6zA4UYeUd8M/dpWld3/ZVg==}
     engines: {node: '>=16.11'}
     peerDependencies:
       zod: ^3.21.4
     dependencies:
-      zod: 3.22.4
+      zod: 3.23.8
     dev: true
 
-  /zod@3.22.4:
-    resolution: {integrity: sha512-iC+8Io04lddc+mVqQ9AZ7OQ2MrUKGN+oIQyq1vemgt46jwCwLfhq7/pwnBnNXXXZb8VTVLKwp9EDkx+ryxIWmg==}
+  /zod@3.23.8:
+    resolution: {integrity: sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==}
     dev: true
