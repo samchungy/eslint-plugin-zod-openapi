@@ -40,10 +40,7 @@ const getType = <T extends TSESTree.Node>(
   // 1. Grab the TypeScript program from parser services
   const parserServices = ESLintUtils.getParserServices(context);
   const checker = parserServices.program.getTypeChecker();
-
-  // 2. Find the backing TS node for the ES node, then that TS type
-  const originalNode = parserServices.esTreeNodeToTSNodeMap.get(node);
-  const nodeType = checker.getTypeAtLocation(originalNode);
+  const nodeType = parserServices.getTypeAtLocation(node);
 
   const symbol = nodeType.getSymbol();
   if (!symbol) {
