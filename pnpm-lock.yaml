@@ -20,7 +20,7 @@ devDependencies:
     specifier: 8.0.1
     version: 8.0.1(@babel/core@7.23.9)
   typescript:
-    specifier: ^5.4.5
+    specifier: 5.4.5
     version: 5.4.5
   zod:
     specifier: 3.23.8
