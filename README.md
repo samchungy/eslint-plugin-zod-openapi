@@ -9,12 +9,14 @@ This is a set of Eslint rules created for use with [zod-openapi](https://github.
 
 ## Installation
 
-To install simply run on yarn or npm
+To install simply run on yarn, npm or pnpm
 
 ```bash
 yarn add -D eslint-plugin-zod-openapi
 # or
 npm i -D eslint-plugin-zod-openapi
+# or
+pnpm i -D eslint-plugin-zod-openapi
 ```
 
 Add the following configuration to your `.eslintrc` file
@@ -65,17 +67,17 @@ You may wish to use overrides as this plugin by default will assume that all Zod
 ### Test
 
 ```shell
-yarn test
+pnpm test
 ```
 
 ### Lint
 
 ```shell
 # Fix issues
-yarn format
+pnpm format
 
 # Check for issues
-yarn lint
+pnpm lint
 ```
 
 ### Release

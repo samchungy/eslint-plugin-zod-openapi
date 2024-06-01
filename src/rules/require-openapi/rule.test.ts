@@ -1,4 +1,4 @@
-import { ESLintUtils } from '@typescript-eslint/utils';
+import { RuleTester } from '@typescript-eslint/rule-tester';
 
 import { setupHelpers } from '../../tests/helper';
 
@@ -7,7 +7,7 @@ import { rule } from './rule';
 const ruleName = 'require-openapi';
 
 const { test } = setupHelpers(ruleName);
-const ruleTester = new ESLintUtils.RuleTester({
+const ruleTester = new RuleTester({
   parser: '@typescript-eslint/parser',
   parserOptions: {
     project: './tsconfig.json',

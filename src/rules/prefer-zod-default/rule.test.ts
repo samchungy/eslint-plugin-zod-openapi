@@ -1,4 +1,4 @@
-import { ESLintUtils } from '@typescript-eslint/utils';
+import { RuleTester } from '@typescript-eslint/rule-tester';
 
 import { setupHelpers } from '../../tests/helper';
 
@@ -8,7 +8,7 @@ const { test } = setupHelpers(ruleName);
 
 import { rule } from './rule';
 
-const ruleTester = new ESLintUtils.RuleTester({
+const ruleTester = new RuleTester({
   parser: '@typescript-eslint/parser',
   parserOptions: {
     project: './tsconfig.json',
