@@ -1,9 +1,6 @@
+import 'zod-openapi/extend';
 import { z } from 'zod';
-import {
-  type ZodOpenApiOperationObject,
-  extendZodWithOpenApi,
-} from 'zod-openapi';
-extendZodWithOpenApi(z);
+import type { ZodOpenApiOperationObject } from 'zod-openapi';
 
 const QuerySchema = z
   .object({
