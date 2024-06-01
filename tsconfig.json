@@ -5,8 +5,13 @@
     "target": "ES2022",
     "removeComments": false,
     "module": "node16",
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "incremental": true,
+    "isolatedModules": true,
+    "resolveJsonModule": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false
   },
   "exclude": ["lib*/**/*"],
-  "extends": "skuba/config/tsconfig.json"
+  "extends": "tsconfig-seek"
 }
