@@ -97,7 +97,7 @@ export const rule: TSESLint.RuleModule<'requires', readonly unknown[]> =
       docs: {
         description:
           'Requires that .openapi() should be declared at the end of a zod chain',
-        recommended: 'error',
+        recommended: 'recommended',
       },
     },
     defaultOptions: [],

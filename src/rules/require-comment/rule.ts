@@ -349,13 +349,13 @@ export const rule = createRule({
         }
 
         if (
-          node.typeParameters?.type !==
+          node.typeArguments?.type !==
           AST_NODE_TYPES.TSTypeParameterInstantiation
         ) {
           return;
         }
 
-        const param = node.typeParameters.params[0];
+        const param = node.typeArguments.params[0];
 
         if (
           param?.type !== AST_NODE_TYPES.TSTypeQuery ||
@@ -427,7 +427,7 @@ export const rule = createRule({
     docs: {
       description:
         'Requires that all zod schema have a description and matching comment',
-      recommended: 'error',
+      recommended: 'stylistic',
     },
   },
   defaultOptions: [],

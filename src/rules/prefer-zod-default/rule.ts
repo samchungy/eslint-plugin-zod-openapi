@@ -97,7 +97,7 @@ export const rule = createRule({
     schema: [],
     docs: {
       description: 'Requires that all zod primatives have an example',
-      recommended: 'error',
+      recommended: 'strict',
     },
   },
   defaultOptions: [],

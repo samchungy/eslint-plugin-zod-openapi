@@ -3,7 +3,9 @@
     "lib": ["ES2022"],
     "outDir": "lib",
     "target": "ES2022",
-    "removeComments": false
+    "removeComments": false,
+    "module": "node16",
+    "skipLibCheck": true
   },
   "exclude": ["lib*/**/*"],
   "extends": "skuba/config/tsconfig.json"
