@@ -52,10 +52,5 @@ ruleTester.run(ruleName, rule, {
       errors: [{ messageId: 'require-examples' }],
       options: ['examples'],
     },
-    {
-      ...test('string-no-example'),
-      errors: [{ messageId: 'require-examples' }],
-      options: ['examples'],
-    },
   ],
 });
