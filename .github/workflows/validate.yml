@@ -3,12 +3,14 @@ name: Validate
 on:
   pull_request:
   push:
-    branches:
-      - 'master'
+    branches-ignore:
+      - master
+
 permissions: {}
 
 jobs:
   validate:
+    if: github.event_name != 'pull_request' && ! github.event.pull_request.head.repo.fork
     name: Lint & Test
     permissions:
       checks: write
