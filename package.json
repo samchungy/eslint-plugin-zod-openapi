@@ -36,7 +36,7 @@
   "devDependencies": {
     "@types/node": "20.14.10",
     "@typescript-eslint/rule-tester": "7.18.0",
-    "skuba": "8.0.1",
+    "skuba": "8.2.0",
     "typescript": "5.5.3",
     "zod": "3.23.8",
     "zod-openapi": "2.19.0"
