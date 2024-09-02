@@ -31,11 +31,11 @@
     "test:watch": "skuba test --watch"
   },
   "dependencies": {
-    "@typescript-eslint/utils": "^7.11.0"
+    "@typescript-eslint/utils": "^8.4.0"
   },
   "devDependencies": {
     "@types/node": "20.14.10",
-    "@typescript-eslint/rule-tester": "7.18.0",
+    "@typescript-eslint/rule-tester": "8.4.0",
     "skuba": "8.0.1",
     "typescript": "5.5.3",
     "zod": "3.23.8",
