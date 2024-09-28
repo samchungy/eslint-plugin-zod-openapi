@@ -9,9 +9,10 @@ const { test } = setupHelpers(ruleName);
 import { rule } from './rule';
 
 const ruleTester = new RuleTester({
-  parser: '@typescript-eslint/parser',
-  parserOptions: {
-    project: './tsconfig.json',
+  languageOptions: {
+    parserOptions: {
+      project: './tsconfig.json',
+    },
   },
 });
 

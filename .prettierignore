@@ -5,6 +5,7 @@
 gantry*.yaml
 gantry*.yml
 pnpm-lock.yaml
+coverage
 # end managed by skuba
 
 src/rules/**/tests/*-disable-prettier*.ts

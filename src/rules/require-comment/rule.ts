@@ -427,7 +427,6 @@ export const rule = createRule({
     docs: {
       description:
         'Requires that all zod schema have a description and matching comment',
-      recommended: 'stylistic',
     },
   },
   defaultOptions: [],

@@ -121,7 +121,6 @@ export const rule: TSESLint.RuleModule<
     docs: {
       description:
         'Requires that all zod schema have an openapi method and select properties',
-      recommended: 'recommended',
     },
   },
   defaultOptions: [],

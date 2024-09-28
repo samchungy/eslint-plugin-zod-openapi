@@ -8,9 +8,10 @@ const ruleName = 'require-openapi';
 
 const { test } = setupHelpers(ruleName);
 const ruleTester = new RuleTester({
-  parser: '@typescript-eslint/parser',
-  parserOptions: {
-    project: './tsconfig.json',
+  languageOptions: {
+    parserOptions: {
+      project: './tsconfig.json',
+    },
   },
 });
 

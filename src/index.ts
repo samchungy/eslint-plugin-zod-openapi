@@ -8,7 +8,7 @@ const ruleFolders = readdirSync(rulesDir);
 type RuleModule = TSESLint.RuleModule<string, unknown[]> & { name: string };
 
 const rules = ruleFolders.reduce<Record<string, RuleModule>>((acc, curr) => {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { rule } = require(path.join(rulesDir, curr, 'rule')) as {
     rule: RuleModule;
   };
