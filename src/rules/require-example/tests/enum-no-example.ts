@@ -1,4 +1,3 @@
-import 'zod-openapi/extend';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
-export const ZodPrimative = z.enum(['a', 'b']).openapi({ description: 'test' });
+export const ZodPrimative = z.enum(['a', 'b']).meta({ description: 'test' });

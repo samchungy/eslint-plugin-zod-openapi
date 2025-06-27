@@ -1,5 +1,4 @@
-import 'zod-openapi/extend';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 export const StringDateSchema = z
   .string()
@@ -7,4 +6,4 @@ export const StringDateSchema = z
 /**
  * hello
  */
-export const OtherSchema = z.string().openapi({ description: 'hello' });
+export const OtherSchema = z.string().meta({ description: 'hello' });

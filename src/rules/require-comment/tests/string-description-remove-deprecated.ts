@@ -1,8 +1,7 @@
-import 'zod-openapi/extend';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 /**
  * @deprecated correct description
  */
 export const ZodString = z
   .string()
-  .openapi({ description: 'correct description' });
+  .meta({ description: 'correct description' });

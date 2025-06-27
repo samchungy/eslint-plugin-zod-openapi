@@ -20,7 +20,7 @@ ruleTester.run(ruleName, rule, {
   valid: [test('string-default')],
   invalid: [
     {
-      ...test('string-openapi-default'),
+      ...test('string-meta-default'),
       errors: [{ messageId: 'prefer' }],
     },
   ],

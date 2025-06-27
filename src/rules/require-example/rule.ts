@@ -5,7 +5,7 @@ import {
   type TSESTree,
 } from '@typescript-eslint/utils';
 
-import { findOpenApiCallExpression } from '../../util/traverse';
+import { findMetaCallExpression } from '../../util/traverse';
 import { getType } from '../../util/type';
 
 type Key = 'example' | 'examples';
@@ -31,9 +31,9 @@ const getExample = (
 const testExample = (
   node: TSESTree.Node,
   context: Readonly<TSESLint.RuleContext<MessageIds, [Key]>>,
-  openApiCallExpression: TSESTree.CallExpression,
+  metaCallExpression: TSESTree.CallExpression,
 ) => {
-  const argument = openApiCallExpression?.arguments[0];
+  const argument = metaCallExpression?.arguments[0];
   if (!argument || argument.type !== AST_NODE_TYPES.ObjectExpression) {
     return;
   }
@@ -46,7 +46,7 @@ const testExample = (
         context.options[0] === 'examples'
           ? 'require-examples'
           : 'require-example',
-      node: openApiCallExpression,
+      node: metaCallExpression,
     });
   }
 
@@ -79,13 +79,13 @@ export const rule = createRule<[Key], MessageIds>({
           return;
         }
 
-        const openApiCallExpression = findOpenApiCallExpression(declarator);
+        const metaCallExpression = findMetaCallExpression(declarator);
 
-        if (!openApiCallExpression) {
+        if (!metaCallExpression) {
           return;
         }
 
-        return testExample(node, context, openApiCallExpression);
+        return testExample(node, context, metaCallExpression);
       },
       Property(node) {
         const type = getType(node, context);
@@ -93,13 +93,13 @@ export const rule = createRule<[Key], MessageIds>({
           return;
         }
 
-        const openApiCallExpression = findOpenApiCallExpression(node);
+        const metaCallExpression = findMetaCallExpression(node);
 
-        if (!openApiCallExpression) {
+        if (!metaCallExpression) {
           return;
         }
 
-        return testExample(node, context, openApiCallExpression);
+        return testExample(node, context, metaCallExpression);
       },
     };
   },
@@ -107,8 +107,8 @@ export const rule = createRule<[Key], MessageIds>({
   meta: {
     type: 'suggestion',
     messages: {
-      'require-example': '.openapi() example is required for Zod primatives',
-      'require-examples': '.openapi() examples is required for Zod primatives',
+      'require-example': '.meta() example is required for Zod primatives',
+      'require-examples': '.meta() examples is required for Zod primatives',
     },
     schema: [
       {

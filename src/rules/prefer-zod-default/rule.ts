@@ -5,7 +5,7 @@ import {
   type TSESTree,
 } from '@typescript-eslint/utils';
 
-import { findOpenApiCallExpression } from '../../util/traverse';
+import { findMetaCallExpression } from '../../util/traverse';
 import { getType } from '../../util/type';
 
 const getDefault = (
@@ -26,9 +26,9 @@ const getDefault = (
 const testDefault = (
   _node: TSESTree.Node,
   context: Readonly<TSESLint.RuleContext<'prefer', readonly unknown[]>>,
-  openApiCallExpression: TSESTree.CallExpression,
+  metaCallExpression: TSESTree.CallExpression,
 ) => {
-  const argument = openApiCallExpression?.arguments[0];
+  const argument = metaCallExpression?.arguments[0];
   if (!argument || argument.type !== AST_NODE_TYPES.ObjectExpression) {
     return;
   }
@@ -64,13 +64,13 @@ export const rule = createRule({
           return;
         }
 
-        const openApiCallExpression = findOpenApiCallExpression(declarator);
+        const metaCallExpression = findMetaCallExpression(declarator);
 
-        if (!openApiCallExpression) {
+        if (!metaCallExpression) {
           return;
         }
 
-        return testDefault(node, context, openApiCallExpression);
+        return testDefault(node, context, metaCallExpression);
       },
       Property(node) {
         const type = getType(node, context);
@@ -78,13 +78,13 @@ export const rule = createRule({
           return;
         }
 
-        const openApiCallExpression = findOpenApiCallExpression(node);
+        const metaCallExpression = findMetaCallExpression(node);
 
-        if (!openApiCallExpression) {
+        if (!metaCallExpression) {
           return;
         }
 
-        return testDefault(node, context, openApiCallExpression);
+        return testDefault(node, context, metaCallExpression);
       },
     };
   },
@@ -92,7 +92,7 @@ export const rule = createRule({
   meta: {
     type: 'suggestion',
     messages: {
-      prefer: 'use .default() instead of .openapi() default',
+      prefer: 'use .default() instead of .meta() default',
     },
     schema: [],
     docs: {

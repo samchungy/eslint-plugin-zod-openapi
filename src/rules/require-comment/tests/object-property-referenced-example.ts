@@ -1,5 +1,4 @@
-import 'zod-openapi/extend';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 /**
  * object description
@@ -12,9 +11,9 @@ export const ZodObject = z
      */
     prop: z
       .string()
-      .openapi({ description: 'prop description', example: 'hello' }),
+      .meta({ description: 'prop description', example: 'hello' }),
   })
-  .openapi({ description: 'object description' });
+  .meta({ description: 'object description' });
 
 /**
  * new object description
@@ -27,4 +26,4 @@ export const NewZodObject = z
      */
     copyProp: ZodObject.shape.prop,
   })
-  .openapi({ description: 'new object description' });
+  .meta({ description: 'new object description' });

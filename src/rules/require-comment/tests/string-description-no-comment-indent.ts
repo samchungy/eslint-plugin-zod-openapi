@@ -1,8 +1,7 @@
-import 'zod-openapi/extend';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 export const run = () => {
-  const ZodString = z.string().openapi({ description: 'a description' });
+  const ZodString = z.string().meta({ description: 'a description' });
 
   return { ZodString };
 };

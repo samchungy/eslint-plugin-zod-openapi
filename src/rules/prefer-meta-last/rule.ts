@@ -4,7 +4,7 @@ import {
   type TSESLint,
 } from '@typescript-eslint/utils';
 
-import { findOpenApiCallExpression, getIdentifier } from '../../util/traverse';
+import { findMetaCallExpression, getIdentifier } from '../../util/traverse';
 import { getType } from '../../util/type';
 
 // eslint-disable-next-line new-cap
@@ -27,15 +27,15 @@ export const rule: TSESLint.RuleModule<'requires', readonly unknown[]> =
             return;
           }
 
-          const openApiCallExpression = findOpenApiCallExpression(declarator);
+          const metaCallExpression = findMetaCallExpression(declarator);
 
-          if (!openApiCallExpression) {
+          if (!metaCallExpression) {
             return;
           }
 
           const lastNode = getIdentifier(declarator);
 
-          if (!lastNode || lastNode?.name === 'openapi') {
+          if (!lastNode || lastNode?.name === 'meta') {
             return;
           }
 
@@ -46,10 +46,10 @@ export const rule: TSESLint.RuleModule<'requires', readonly unknown[]> =
             return context.report({
               messageId: 'requires',
               node:
-                openApiCallExpression.callee.type ===
+                metaCallExpression.callee.type ===
                 AST_NODE_TYPES.MemberExpression
-                  ? openApiCallExpression.callee.property
-                  : openApiCallExpression,
+                  ? metaCallExpression.callee.property
+                  : metaCallExpression,
             });
           }
         },
@@ -59,15 +59,15 @@ export const rule: TSESLint.RuleModule<'requires', readonly unknown[]> =
             return;
           }
 
-          const openApiCallExpression = findOpenApiCallExpression(node);
+          const metaCallExpression = findMetaCallExpression(node);
 
-          if (!openApiCallExpression) {
+          if (!metaCallExpression) {
             return;
           }
 
           const lastNode = getIdentifier(node.value);
 
-          if (!lastNode || lastNode?.name === 'openapi') {
+          if (!lastNode || lastNode?.name === 'meta') {
             return;
           }
 
@@ -78,25 +78,25 @@ export const rule: TSESLint.RuleModule<'requires', readonly unknown[]> =
             return context.report({
               messageId: 'requires',
               node:
-                openApiCallExpression.callee.type ===
+                metaCallExpression.callee.type ===
                 AST_NODE_TYPES.MemberExpression
-                  ? openApiCallExpression.callee.property
-                  : openApiCallExpression,
+                  ? metaCallExpression.callee.property
+                  : metaCallExpression,
             });
           }
         },
       };
     },
-    name: 'require-openapi-last',
+    name: 'require-meta-last',
     meta: {
       type: 'suggestion',
       messages: {
-        requires: '.openapi() should be declared at the end of a zod chain',
+        requires: '.meta() should be declared at the end of a zod chain',
       },
       schema: [],
       docs: {
         description:
-          'Requires that .openapi() should be declared at the end of a zod chain',
+          'Requires that .meta() should be declared at the end of a zod chain',
       },
     },
     defaultOptions: [],

@@ -6,7 +6,7 @@ import {
   type TSESTree,
 } from '@typescript-eslint/utils';
 
-import { findOpenApiCallExpression } from '../../util/traverse';
+import { findMetaCallExpression } from '../../util/traverse';
 import { getInferredComment, getType } from '../../util/type';
 
 const commentRegex = /[\*\n\s]+(.*)[\*\s]+(.*)/;
@@ -171,12 +171,12 @@ const getExpectedCommentValue = (
   node: TSESTree.VariableDeclarator | TSESTree.Property,
   context: Readonly<TSESLint.RuleContext<string, readonly unknown[]>>,
 ) => {
-  const openApiCallExpression = findOpenApiCallExpression(node);
-  if (!openApiCallExpression) {
+  const metaCallExpression = findMetaCallExpression(node);
+  if (!metaCallExpression) {
     return getInferredComment(node, context);
   }
 
-  const argument = openApiCallExpression?.arguments[0];
+  const argument = metaCallExpression?.arguments[0];
   if (!argument || argument.type !== AST_NODE_TYPES.ObjectExpression) {
     return;
   }
@@ -189,7 +189,7 @@ const getExpectedCommentValue = (
   if (!descriptionProperty) {
     return context.report({
       messageId: 'required',
-      node: openApiCallExpression,
+      node: metaCallExpression,
     });
   }
 
@@ -420,8 +420,8 @@ export const rule = createRule({
     fixable: 'code',
     type: 'suggestion',
     messages: {
-      required: '.openapi() description is required on Zod Schema',
-      comment: '.openapi() description and deprecated must match comment',
+      required: '.meta() description is required on Zod Schema',
+      comment: '.meta() description and deprecated must match comment',
     },
     schema: [],
     docs: {

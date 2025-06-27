@@ -2,7 +2,7 @@ import { RuleTester } from '@typescript-eslint/rule-tester';
 
 import { setupHelpers } from '../../tests/helper';
 
-const ruleName = 'prefer-openapi-last';
+const ruleName = 'prefer-meta-last';
 
 const { test } = setupHelpers(ruleName);
 

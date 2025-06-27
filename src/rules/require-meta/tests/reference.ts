@@ -1,18 +1,17 @@
-import 'zod-openapi/extend';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 import type { ZodOpenApiOperationObject } from 'zod-openapi';
 
 const QuerySchema = z
   .object({
-    a: z.string().openapi({ description: 'a', example: 'a' }),
+    a: z.string().meta({ description: 'a', example: 'a' }),
   })
-  .openapi({ description: 'Query schema' });
+  .meta({ description: 'Query schema' });
 
 const GetJobResponseSchema = z
   .object({
-    a: z.string().openapi({ description: 'a', example: 'a' }),
+    a: z.string().meta({ description: 'a', example: 'a' }),
   })
-  .openapi({ description: 'Response schema' });
+  .meta({ description: 'Response schema' });
 
 export const getJobOperation: ZodOpenApiOperationObject = {
   operationId: 'getJob',

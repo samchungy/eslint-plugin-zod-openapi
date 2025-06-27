@@ -1,5 +1,4 @@
-import 'zod-openapi/extend';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 /**
  * correct
@@ -7,4 +6,4 @@ import { z } from 'zod';
  */
 export const ZodString = z
   .string()
-  .openapi({ description: 'correct', example: 'hello world' });
+  .meta({ description: 'correct', example: 'hello world' });
