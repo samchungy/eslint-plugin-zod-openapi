@@ -1,4 +1,3 @@
-import 'zod-openapi/extend';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
-export const ZodString = z.string().openapi({ example: 'test' });
+export const ZodString = z.string().meta({ example: 'test' });

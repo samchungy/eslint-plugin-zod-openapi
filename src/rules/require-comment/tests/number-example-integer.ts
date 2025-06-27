@@ -1,5 +1,4 @@
-import 'zod-openapi/extend';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 /**
  * a number
@@ -7,4 +6,4 @@ import { z } from 'zod';
  */
 export const ZodNumber = z
   .number()
-  .openapi({ description: 'a number', example: 1 });
+  .meta({ description: 'a number', example: 1 });

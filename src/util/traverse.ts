@@ -1,6 +1,6 @@
 import { AST_NODE_TYPES, type TSESTree } from '@typescript-eslint/utils';
 
-const findOpenApiInChain = (
+const findMetaInChain = (
   root: TSESTree.CallExpression,
 ): TSESTree.CallExpression | undefined => {
   const callee = root.callee;
@@ -10,19 +10,19 @@ const findOpenApiInChain = (
 
   const property = callee.property;
   if (property.type === AST_NODE_TYPES.Identifier) {
-    if (property.name === 'openapi') {
+    if (property.name === 'meta') {
       return root;
     }
   }
 
   if (callee.object.type === AST_NODE_TYPES.CallExpression) {
-    return findOpenApiInChain(callee.object);
+    return findMetaInChain(callee.object);
   }
 
   return undefined;
 };
 
-export const findOpenApiCallExpression = (
+export const findMetaCallExpression = (
   node:
     | TSESTree.VariableDeclarator
     | TSESTree.Property
@@ -34,7 +34,7 @@ export const findOpenApiCallExpression = (
       return;
     }
 
-    return findOpenApiInChain(init);
+    return findMetaInChain(init);
   }
 
   if (node.type === AST_NODE_TYPES.Property) {
@@ -43,11 +43,11 @@ export const findOpenApiCallExpression = (
       return;
     }
 
-    return findOpenApiInChain(value);
+    return findMetaInChain(value);
   }
 
   if (node.type === AST_NODE_TYPES.CallExpression) {
-    return findOpenApiInChain(node);
+    return findMetaInChain(node);
   }
 
   return undefined;

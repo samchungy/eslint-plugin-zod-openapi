@@ -4,7 +4,7 @@ import { setupHelpers } from '../../tests/helper';
 
 import { rule } from './rule';
 
-const ruleName = 'require-openapi';
+const ruleName = 'require-meta';
 
 const { test } = setupHelpers(ruleName);
 const ruleTester = new RuleTester({
@@ -20,8 +20,8 @@ ruleTester.run(ruleName, rule, {
     test('object-property-description'),
     test('object-property-reference'),
     test('object-shape'),
-    test('literal-no-openapi'),
-    test('optional-no-openapi'),
+    test('literal-no-meta'),
+    test('optional-no-meta'),
     test('reference'),
     test('object-shape-reference'),
     test('object-property-reference-optional'),
@@ -29,20 +29,20 @@ ruleTester.run(ruleName, rule, {
   ],
   invalid: [
     {
-      ...test('string-no-openapi'),
-      errors: [{ messageId: 'open-api-required' }],
+      ...test('string-no-meta'),
+      errors: [{ messageId: 'meta-required' }],
     },
     {
       ...test('object-property-no-description'),
-      errors: [{ messageId: 'open-api-required' }],
+      errors: [{ messageId: 'meta-required' }],
     },
     {
       ...test('object-extend'),
-      errors: [{ messageId: 'open-api-required' }],
+      errors: [{ messageId: 'meta-required' }],
     },
     {
       ...test('object-property-optional'),
-      errors: [{ messageId: 'open-api-required' }],
+      errors: [{ messageId: 'meta-required' }],
     },
   ],
 });

@@ -30,7 +30,7 @@ Add the following configuration to your `.eslintrc` file
 ```js
 {
   "rules": {
-    "zod-openapi/require-openapi": "error"
+    "zod-openapi/require-meta": "error"
     "zod-openapi/require-comment": "error",
     "zod-openapi/prefer-zod-default": "warn",
   }
@@ -44,7 +44,7 @@ You may wish to use overrides as this plugin by default will assume that all Zod
     {
       "files": ["src/api-types/*.ts"],
       "rules": {
-        "zod-openapi/require-openapi": "error"
+        "zod-openapi/require-meta": "error"
       }
     }
   ]
@@ -54,13 +54,13 @@ You may wish to use overrides as this plugin by default will assume that all Zod
 
 🔧 This rule is automatically fixable by the [--fix CLI option](https://eslint.org/docs/latest/user-guide/command-line-interface#--fix).
 
-| Name                                                       | Description                                                                   | 🔧  |
-| ---------------------------------------------------------- | ----------------------------------------------------------------------------- | :-: |
-| [require-openapi](./docs/rules/require-openapi.md)         | Requires that all ZodTypes have an `.openapi()` method.                       |     |
-| [require-comment](./docs/rules/require-comment.md)         | Requires that all ZodTypes have a `description` and matching JSDoc comment.   | ✅  |
-| [require-example](./docs/rules/require-example.md)         | Requires that all ZodTypes have an `example` or `examples` field.             |     |
-| [prefer-openapi-last](./docs/rules/prefer-openapi-last.md) | Prefers that the `.openapi()` method be the last method in the ZodType chain. |     |
-| [prefer-zod-default](./docs/rules/prefer-zod-default.md)   | Provides an error when `default` in `.openapi()` is used                      |     |
+| Name                                                     | Description                                                                 | 🔧  |
+| -------------------------------------------------------- | --------------------------------------------------------------------------- | :-: |
+| [require-meta](./docs/rules/require-meta.md)             | Requires that all ZodTypes have an `.meta()` method.                        |     |
+| [require-comment](./docs/rules/require-comment.md)       | Requires that all ZodTypes have a `description` and matching JSDoc comment. | ✅  |
+| [require-example](./docs/rules/require-example.md)       | Requires that all ZodTypes have an `example` or `examples` field.           |     |
+| [prefer-meta-last](./docs/rules/prefer-meta-last.md)     | Prefers that the `.meta()` method be the last method in the ZodType chain.  |     |
+| [prefer-zod-default](./docs/rules/prefer-zod-default.md) | Provides an error when `default` in `.meta()` is used                       |     |
 
 ## Development
 

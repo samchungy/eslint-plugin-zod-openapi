@@ -9,14 +9,14 @@ In order for your IDE to display descriptions in inferred types, it requires JSD
 A simple example
 
 ```ts
-const NameSchema = z.string().openapi({ example: 'Fred' }); // ❌ error (no description or comment)
+const NameSchema = z.string().meta({ example: 'Fred' }); // ❌ error (no description or comment)
 
 /**
  * A user's name
  **/
 const NameSchema = z
   .string()
-  .openapi({ description: "A user's name", example: 'Fred' }); // ✅ correct
+  .meta({ description: "A user's name", example: 'Fred' }); // ✅ correct
 ```
 
 This rule is also able to infer JSDoc comments from other variables and automatically copies the comments across where otherwise you would gain no type comments.
@@ -29,7 +29,7 @@ A more complex example:
  **/
 const NameSchema = z
   .string()
-  .openapi({ description: "A user's name", example: 'Fred', deprecated: true }); // ✅ correct
+  .meta({ description: "A user's name", example: 'Fred', deprecated: true }); // ✅ correct
 
 /**
  * Person
@@ -47,9 +47,9 @@ const PersonSchema = z
       .number()
       .positive()
       .int()
-      .openapi({ description: "A user's age", example: 12 }),
+      .meta({ description: "A user's age", example: 12 }),
   })
-  .openapi({ description: 'Person' });
+  .meta({ description: 'Person' });
 
 /**
  * Person
