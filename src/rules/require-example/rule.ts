@@ -75,7 +75,7 @@ export const rule = createRule<[Key], MessageIds>({
         }
 
         const type = getType(declarator, context);
-        if (!type?.isZodType || !type.isZodPrimative) {
+        if (!type?.isZodType || !type.isZodPrimitive) {
           return;
         }
 
@@ -89,7 +89,7 @@ export const rule = createRule<[Key], MessageIds>({
       },
       Property(node) {
         const type = getType(node, context);
-        if (!type?.isZodType || !type.isZodPrimative) {
+        if (!type?.isZodType || !type.isZodPrimitive) {
           return;
         }
 
