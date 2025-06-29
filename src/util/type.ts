@@ -34,7 +34,7 @@ const getType = <T extends TSESTree.Node>(
       name: string;
       type: string;
       isZodType: boolean;
-      isZodPrimative: boolean;
+      isZodPrimitive: boolean;
     }
   | undefined => {
   // 1. Grab the TypeScript program from parser services
@@ -68,12 +68,37 @@ const getType = <T extends TSESTree.Node>(
     name,
     type,
     isZodType: name.includes('Zod') && !name.includes('ZodOpenApi'),
-    isZodPrimative: [
+    isZodPrimitive: [
       'ZodString',
       'ZodNumber',
       'ZodBoolean',
       'ZodRecord',
       'ZodEnum',
+      'ZodInt',
+      'ZodUUID',
+      'ZodGUID',
+      'ZodUUID',
+      'ZodEmail',
+      'ZodURL',
+      'ZodEmoji',
+      'ZodNanoID',
+      'ZodCUID',
+      'ZodCUID2',
+      'ZodULID',
+      'ZodXID',
+      'ZodKSUID',
+      'ZodISODateTime',
+      'ZodISODate',
+      'ZodISOTime',
+      'ZodISODuration',
+      'ZodIPv4',
+      'ZodIPv6',
+      'ZodCIDRv4',
+      'ZodCIDRv6',
+      'ZodBase64',
+      'ZodBase64URL',
+      'ZodE164',
+      'ZodJWT',
     ].includes(unwrapType ?? name),
   };
 };

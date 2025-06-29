@@ -74,7 +74,7 @@ export const rule = createRule({
       },
       Property(node) {
         const type = getType(node, context);
-        if (!type?.isZodType || !type.isZodPrimative) {
+        if (!type?.isZodType || !type.isZodPrimitive) {
           return;
         }
 
