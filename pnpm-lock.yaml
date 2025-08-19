@@ -23,11 +23,11 @@ devDependencies:
     specifier: 5.7.2
     version: 5.7.2
   zod:
-    specifier: 3.25.74
-    version: 3.25.74
+    specifier: 4.0.17
+    version: 4.0.17
   zod-openapi:
     specifier: 5.3.1
-    version: 5.3.1(zod@3.25.74)
+    version: 5.3.1(zod@4.0.17)
 
 packages:
 
@@ -7617,15 +7617,19 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
 
-  /zod-openapi@5.3.1(zod@3.25.74):
+  /zod-openapi@5.3.1(zod@4.0.17):
     resolution: {integrity: sha512-lRb4p4+WAhLGBvQCQf5SFxeZtnzO5m3GmCT4IDjOzGNlZFiVOuey9rWN+EVEDSVJC59B54tP2gxah1wVUplONw==}
     engines: {node: '>=20'}
     peerDependencies:
       zod: ^3.25.74 || ^4.0.0
     dependencies:
-      zod: 3.25.74
+      zod: 4.0.17
     dev: true
 
   /zod@3.25.74:
     resolution: {integrity: sha512-J8poo92VuhKjNknViHRAIuuN6li/EwFbAC8OedzI8uxpEPGiXHGQu9wemIAioIpqgfB4SySaJhdk0mH5Y4ICBg==}
+    dev: true
+
+  /zod@4.0.17:
+    resolution: {integrity: sha512-1PHjlYRevNxxdy2JZ8JcNAw7rX8V9P1AKkP+x/xZfxB0K5FYfuV+Ug6P/6NVSR2jHQ+FzDDoDHS04nYUsOIyLQ==}
     dev: true
