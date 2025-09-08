@@ -38,7 +38,7 @@
     "@typescript-eslint/rule-tester": "^8.7.0",
     "skuba": "9.1.0",
     "typescript": "5.7.2",
-    "zod": "3.25.74",
+    "zod": "4.1.5",
     "zod-openapi": "5.3.1"
   },
   "packageManager": "pnpm@8.15.1",
